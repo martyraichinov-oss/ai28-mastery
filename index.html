@@ -2535,7 +2535,7 @@ function makeApiCall(systemPrompt, messages, maxTokens) {
     method: 'POST',
     headers: headers,
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: maxTokens || 1000,
       system: systemPrompt,
       messages: messages
