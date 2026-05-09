@@ -785,6 +785,128 @@
     margin-top: 1px;
   }
 
+
+  /* API KEY BANNER */
+  .api-banner {
+    background: rgba(124,58,237,0.12);
+    border: 1px solid var(--accent3);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .api-banner.connected {
+    background: rgba(34,197,94,0.08);
+    border-color: var(--green);
+  }
+  .api-banner-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent3);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .api-banner.connected .api-banner-label { color: var(--green); }
+  .api-banner-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 7px 12px;
+    outline: none;
+  }
+  .api-banner-input:focus { border-color: var(--accent3); }
+  .api-banner-btn {
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    background: var(--accent3);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    white-space: nowrap;
+  }
+  .api-banner-btn:hover { background: #6d28d9; }
+  .api-status { font-size: 12px; color: var(--text-muted); }
+
+  /* TASK EVALUATOR */
+  .eval-block {
+    margin-top: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .eval-toggle {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--accent2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eval-toggle:hover { background: rgba(255,107,53,0.05); }
+  .eval-panel { display: none; padding: 12px 14px; border-top: 1px solid var(--border); }
+  .eval-panel.open { display: block; }
+  .eval-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 80px;
+    outline: none;
+    margin-bottom: 8px;
+  }
+  .eval-textarea:focus { border-color: var(--accent2); }
+  .eval-submit {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    background: var(--accent2);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .eval-submit:hover { background: #e55a25; }
+  .eval-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .eval-result {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text);
+    background: var(--surface);
+    border-left: 3px solid var(--accent2);
+    padding: 12px;
+    border-radius: 0 6px 6px 0;
+    white-space: pre-wrap;
+    display: none;
+  }
+  .eval-result.show { display: block; }
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
@@ -810,6 +932,14 @@
       </div>
     </div>
   </header>
+
+
+  <div class="api-banner" id="apiBanner">
+    <span class="api-banner-label">&#128273; Anthropic API Key</span>
+    <input class="api-banner-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." />
+    <button class="api-banner-btn" onclick="saveApiKey()">Connect</button>
+    <span class="api-status" id="apiStatus">Required for Live Tutor &amp; Task Evaluation</span>
+  </div>
 
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>TEACH — concept</div>
@@ -1772,6 +1902,7 @@ function openModal(dayNum) {
   // Reset tutor state for new day
   tutorInitialized = false;
   chatHistory = [];
+  window._evalTids = [];
   document.getElementById('chatMessages').innerHTML = '';
   var d = DAYS.find(function(x) { return x.day === dayNum; });
   currentDay = dayNum;
@@ -1796,12 +1927,25 @@ function openModal(dayNum) {
   var doTasks = d.tasks.filter(function(t) { return t.type === 'do'; });
   var testTasks = d.tasks.filter(function(t) { return t.type === 'test'; });
 
-  var doItems = doTasks.map(function(t) {
-    return '<li class="task-item-modal"><span class="task-tag tag-do">DO</span><span>' + t.text + '</span></li>';
+  window._taskTexts = window._taskTexts || {};
+  var doItems = doTasks.map(function(t, i) {
+    var tid = 'do_' + dayNum + '_' + i;
+    window._taskTexts[tid] = t.text;
+    return '<li class="task-item-modal">'
+      + '<span class="task-tag tag-do">DO</span>'
+      + '<span>' + t.text + '</span>'
+      + buildEvalBlock(tid)
+      + '</li>';
   }).join('');
 
-  var testItems = testTasks.map(function(t) {
-    return '<li class="task-item-modal"><span class="task-tag tag-test">TEST</span><span>' + t.text + '</span></li>';
+  var testItems = testTasks.map(function(t, i) {
+    var tid = 'test_' + dayNum + '_' + i;
+    window._taskTexts[tid] = t.text;
+    return '<li class="task-item-modal">'
+      + '<span class="task-tag tag-test">TEST</span>'
+      + '<span>' + t.text + '</span>'
+      + buildEvalBlock(tid)
+      + '</li>';
   }).join('');
 
   var quizOptions = d.quiz.options.map(function(opt, i) {
@@ -1830,6 +1974,7 @@ function openModal(dayNum) {
   // Auto-start tutor session
   tutorInitialized = false;
   chatHistory = [];
+  window._evalTids = [];
   document.getElementById('chatMessages').innerHTML = '';
   setTimeout(initTutorSession, 300);
 }
@@ -1945,16 +2090,7 @@ async function callClaude(userText, isInit) {
     : chatHistory;
 
   try {
-    var response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: messages
-      })
-    });
+    var response = await makeApiCall(systemPrompt, messages, 1000);
 
     var data = await response.json();
     removeThinking();
@@ -1976,6 +2112,130 @@ async function callClaude(userText, isInit) {
   document.getElementById('chatMessages').scrollTop = 99999;
 }
 
+
+// ── API KEY MANAGEMENT ─────────────────────────────
+var userApiKey = '';
+
+function saveApiKey() {
+  var input = document.getElementById('apiKeyInput');
+  var key = input.value.trim();
+  if (!key || key.indexOf('sk-ant') !== 0) {
+    document.getElementById('apiStatus').textContent = 'Invalid key format — should start with sk-ant-...';
+    return;
+  }
+  userApiKey = key;
+  try { localStorage.setItem('ai28_apikey', key); } catch(e) {}
+  var banner = document.getElementById('apiBanner');
+  banner.classList.add('connected');
+  document.getElementById('apiStatus').textContent = 'Connected — Tutor and Evaluation active';
+  input.value = '●●●●●●●●●●●●●●●●';
+}
+
+function getApiKey() {
+  if (userApiKey) return userApiKey;
+  try {
+    var stored = localStorage.getItem('ai28_apikey');
+    if (stored) { userApiKey = stored; return stored; }
+  } catch(e) {}
+  return null;
+}
+
+function makeApiCall(systemPrompt, messages, maxTokens) {
+  var key = getApiKey();
+  var headers = { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' };
+  if (key) headers['x-api-key'] = key;
+  return fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens || 1000,
+      system: systemPrompt,
+      messages: messages
+    })
+  });
+}
+
+// ── TASK EVALUATOR ─────────────────────────────────
+function buildEvalBlock(tid) {
+  if (!window._evalTids) window._evalTids = [];
+  var idx = window._evalTids.length;
+  window._evalTids.push(tid);
+  return '<div class="eval-block">'
+    + '<button class="eval-toggle" onclick="toggleEval(' + idx + ')">&#9998; Submit for AI evaluation</button>'
+    + '<div class="eval-panel" id="panel_' + tid + '">'
+    + '<textarea class="eval-textarea" id="txt_' + tid + '" placeholder="Describe what you did or paste your output..."></textarea>'
+    + '<button class="eval-submit" id="btn_' + tid + '" onclick="submitEval(' + idx + ')">Get Evaluation</button>'
+    + '<div class="eval-result" id="res_' + tid + '"></div>'
+    + '</div></div>';
+}
+
+function toggleEval(idx) {
+  var tid = window._evalTids[idx];
+  var panel = document.getElementById('panel_' + tid);
+  if (panel) {
+    panel.classList.toggle('open');
+  }
+}
+
+async function submitEval(idx) {
+  var tid = window._evalTids[idx];
+  var taskText = (window._taskTexts && window._taskTexts[tid]) || 'complete the assigned task';
+  var txt = document.getElementById('txt_' + tid);
+  var btn = document.getElementById('btn_' + tid);
+  var res = document.getElementById('res_' + tid);
+  var submission = txt ? txt.value.trim() : '';
+
+  if (!submission) {
+    res.textContent = 'Please describe what you did before submitting.';
+    res.className = 'eval-result show';
+    return;
+  }
+
+  if (!getApiKey()) {
+    res.textContent = 'No API key connected. Enter your Anthropic API key in the banner at the top of the page.';
+    res.className = 'eval-result show';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Evaluating...';
+  res.textContent = '';
+  res.className = 'eval-result';
+
+  var d = DAYS.find(function(x) { return x.day === currentDay; });
+  var sysPrompt = 'You are a demanding AI training specialist evaluating a student submission for a hands-on task in a 28-day AI mastery programme.'
+    + ' The student is Martin, 49, based in Sofia, Bulgaria, working toward professional AI mastery.'
+    + ' Today is Day ' + (d ? d.day : '?') + ' — Tool: ' + (d ? d.tool : 'unknown') + '.'
+    + ' The task was: "' + taskText + '"'
+    + ' Evaluate the submission against these criteria:'
+    + ' 1. Did they actually attempt the task or just describe it theoretically?'
+    + ' 2. Is the output correct, relevant, and competent?'
+    + ' 3. What did they do well?'
+    + ' 4. What is missing, shallow, or wrong?'
+    + ' 5. A specific improvement action they should take right now.'
+    + ' Be direct and critical. Do not pad. Score their submission: Excellent / Competent / Needs Work / Redo.'
+    + ' Format: Score on first line, then your evaluation in 3-5 sentences, then one concrete next action.';
+
+  try {
+    var response = await makeApiCall(sysPrompt, [{ role: 'user', content: 'My submission: ' + submission }], 600);
+    var data = await response.json();
+    if (data.content && data.content[0]) {
+      res.textContent = data.content[0].text;
+      res.className = 'eval-result show';
+    } else {
+      res.textContent = 'Evaluation failed: ' + JSON.stringify(data.error || data);
+      res.className = 'eval-result show';
+    }
+  } catch(err) {
+    res.textContent = 'Connection error: ' + err.message;
+    res.className = 'eval-result show';
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Get Evaluation';
+}
+
 // Expose to global scope for inline onclick handlers
 window.showWeek = showWeek;
 window.openModal = openModal;
@@ -1987,12 +2247,27 @@ window.switchTab = switchTab;
 window.sendMessage = sendMessage;
 window.handleChatKey = handleChatKey;
 window.answerQuiz = answerQuiz;
+window.saveApiKey = saveApiKey;
+window.toggleEval = toggleEval;
+window.submitEval = submitEval;
 
 // Init — wait for DOM
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', renderAllGrids);
-} else {
+function initApp() {
   renderAllGrids();
+  try {
+    var stored = localStorage.getItem('ai28_apikey');
+    if (stored) {
+      userApiKey = stored;
+      document.getElementById('apiBanner').classList.add('connected');
+      document.getElementById('apiStatus').textContent = 'Connected — Tutor and Evaluation active';
+      document.getElementById('apiKeyInput').value = '●●●●●●●●●●●●●●●●';
+    }
+  } catch(e) {}
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
 }
 </script>
 </body>
