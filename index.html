@@ -1953,7 +1953,6 @@ function openModal(dayNum) {
   currentDay = dayNum;
   tutorInitialized = false;
   chatHistory = [];
-  window._evalTids = [];
   document.getElementById('chatMessages').innerHTML = '';
   var d = DAYS.find(function(x) { return x.day === dayNum; });
 
@@ -2024,7 +2023,6 @@ function openModal(dayNum) {
   // Auto-start tutor session
   tutorInitialized = false;
   chatHistory = [];
-  window._evalTids = [];
   document.getElementById('chatMessages').innerHTML = '';
   setTimeout(initTutorSession, 300);
 }
@@ -2214,28 +2212,21 @@ function makeApiCall(systemPrompt, messages, maxTokens) {
 
 // ── TASK EVALUATOR ─────────────────────────────────
 function buildEvalBlock(tid) {
-  if (!window._evalTids) window._evalTids = [];
-  var idx = window._evalTids.length;
-  window._evalTids.push(tid);
   return '<div class="eval-block">'
-    + '<button class="eval-toggle" onclick="toggleEval(' + idx + ')">&#9998; Submit for AI evaluation</button>'
+    + '<button class="eval-toggle" onclick="toggleEval(\"' + tid + '\")">&#9998; Submit for AI evaluation</button>'
     + '<div class="eval-panel" id="panel_' + tid + '">'
     + '<textarea class="eval-textarea" id="txt_' + tid + '" placeholder="Describe what you did or paste your output..."></textarea>'
-    + '<button class="eval-submit" id="btn_' + tid + '" onclick="submitEval(' + idx + ')">Get Evaluation</button>'
+    + '<button class="eval-submit" id="btn_' + tid + '" onclick="submitEval(\"' + tid + '\")">Get Evaluation</button>'
     + '<div class="eval-result" id="res_' + tid + '"></div>'
     + '</div></div>';
 }
 
-function toggleEval(idx) {
-  var tid = window._evalTids[idx];
+function toggleEval(tid) {
   var panel = document.getElementById('panel_' + tid);
-  if (panel) {
-    panel.classList.toggle('open');
-  }
+  if (panel) panel.classList.toggle('open');
 }
 
-async function submitEval(idx) {
-  var tid = window._evalTids[idx];
+async function submitEval(tid) {
   var taskText = (window._taskTexts && window._taskTexts[tid]) || 'complete the assigned task';
   var txt = document.getElementById('txt_' + tid);
   var btn = document.getElementById('btn_' + tid);
