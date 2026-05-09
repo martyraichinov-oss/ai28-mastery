@@ -20,11 +20,12 @@ Verify your email when the confirmation arrives.
 
 ---
 
-## Step 2 — Get your free credit
+## Step 2 — Add credit to your account
 
-Anthropic gives new accounts **$5 of free credit** automatically.
-Each conversation with the tutor costs roughly **$0.01–0.03**.
-Your $5 will last the entire 28-day program and beyond.
+The Anthropic API is **pay-per-use** — there is no free tier.
+You will need to add a payment method and purchase credits.
+A minimum top-up is typically $5.
+Each tutor conversation costs roughly **$0.01–0.03**, so $5 covers the entire 28-day programme many times over.
 
 ---
 
