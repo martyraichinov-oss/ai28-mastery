@@ -938,6 +938,62 @@
     display: none;
   }
   .eval-result.show { display: block; }
+
+  .static-eval-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .eval-instructions {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .eval-textarea-static {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    padding: 12px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  .eval-textarea-static:focus { border-color: var(--accent2); }
+  #evalBtn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent2);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+  #evalBtn:hover { background: #e55a25; }
+  #evalBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .eval-output {
+    display: none;
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    background: var(--surface);
+    border-left: 3px solid var(--accent2);
+    padding: 14px;
+    border-radius: 0 8px 8px 0;
+    white-space: pre-wrap;
+  }
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
@@ -1976,16 +2032,20 @@ function openModal(dayNum) {
   var doTasks = d.tasks.filter(function(t) { return t.type === 'do'; });
   var testTasks = d.tasks.filter(function(t) { return t.type === 'test'; });
 
-  window._taskTexts = window._taskTexts || {};
-  var doItems = doTasks.map(function(t, i) {
-    var tid = 'do_' + dayNum + '_' + i;
-    window._taskTexts[tid] = t.text;
-    return '<li class="task-item-modal">'
-      + '<span class="task-tag tag-do">DO</span>'
-      + '<span>' + t.text + '</span>'
-      + buildEvalBlock(tid)
-      + '</li>';
+  window._taskTexts = {};
+  var doItems = doTasks.map(function(t) {
+    return '<li class="task-item-modal"><span class="task-tag tag-do">DO</span><span>' + t.text + '</span></li>';
   }).join('');
+
+  var testItems = testTasks.map(function(t) {
+    return '<li class="task-item-modal"><span class="task-tag tag-test">TEST</span><span>' + t.text + '</span></li>';
+  }).join('');
+
+  // Store all task texts for evaluator
+  doTasks.concat(testTasks).forEach(function(t) {
+    window._taskTexts[dayNum] = window._taskTexts[dayNum] || [];
+    window._taskTexts[dayNum].push(t.text);
+  });
 
   var testItems = testTasks.map(function(t, i) {
     var tid = 'test_' + dayNum + '_' + i;
@@ -2014,6 +2074,13 @@ function openModal(dayNum) {
     + '<div class="quiz-question">' + d.quiz.q + '</div>'
     + '<div class="quiz-options">' + quizOptions + '</div>'
     + '<div class="quiz-feedback" id="quizFeedback"></div>'
+    + '</div>'
+    + '<div class="section-label" style="margin-top:20px;">&#128203; Submit Your Work for Evaluation</div>'
+    + '<div class="static-eval-box">'
+    + '<div class="eval-instructions">Complete the tasks above, then paste your output or describe what you did here. Claude will score and critique your work.</div>'
+    + '<textarea id="evalInput" class="eval-textarea-static" placeholder="Paste your output, describe your approach, or write your answers here..."></textarea>'
+    + '<button id="evalBtn" onclick="runEvaluation()">Get AI Evaluation</button>'
+    + '<div id="evalOutput" class="eval-output"></div>'
     + '</div>';
 
   var btn = document.getElementById('markDoneBtn');
@@ -2290,6 +2357,61 @@ function toggleKeyHelp() {
   if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
+async function runEvaluation() {
+  var input = document.getElementById('evalInput');
+  var btn = document.getElementById('evalBtn');
+  var output = document.getElementById('evalOutput');
+  var submission = input ? input.value.trim() : '';
+
+  if (!submission) {
+    output.textContent = 'Please paste your work or describe what you did before submitting.';
+    output.style.display = 'block';
+    return;
+  }
+
+  if (!getApiKey()) {
+    output.textContent = 'Paste your Anthropic API key in the banner at the top and click Connect first.';
+    output.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Evaluating...';
+  output.textContent = '';
+  output.style.display = 'none';
+
+  var d = DAYS.find(function(x) { return x.day === currentDay; });
+  var taskList = d.tasks.filter(function(t) { return t.type === 'do' || t.type === 'test'; })
+    .map(function(t, i) { return (i+1) + '. ' + t.text; }).join(' | ');
+
+  var sysPrompt = 'You are a demanding AI training specialist evaluating a student submission. '
+    + 'Student: Martin (or his child), working through a 28-day AI mastery programme. '
+    + 'Day ' + d.day + ' — Tool: ' + d.tool + '. '
+    + 'Tasks set: ' + taskList + '. '
+    + 'Evaluate the submission: Did they actually attempt the tasks? Is the output competent? '
+    + 'Score: Excellent / Competent / Needs Work / Redo. '
+    + 'Then 3-4 sentences of direct critique. Then one concrete next action. '
+    + 'Be direct. No padding.';
+
+  try {
+    var resp = await makeApiCall(sysPrompt, [{ role: 'user', content: submission }], 500);
+    var data = await resp.json();
+    if (data.content && data.content[0] && data.content[0].text) {
+      output.textContent = data.content[0].text;
+    } else if (data.error) {
+      output.textContent = 'API Error: ' + data.error.message;
+    } else {
+      output.textContent = 'Unexpected response: ' + JSON.stringify(data).substring(0, 150);
+    }
+  } catch(err) {
+    output.textContent = 'Connection error: ' + err.message;
+  }
+
+  output.style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = 'Get AI Evaluation';
+}
+
 // Expose to global scope for inline onclick handlers
 window.showWeek = showWeek;
 window.openModal = openModal;
@@ -2302,6 +2424,7 @@ window.sendMessage = sendMessage;
 window.handleChatKey = handleChatKey;
 window.answerQuiz = answerQuiz;
 window.saveApiKey = saveApiKey;
+window.runEvaluation = runEvaluation;
 window.toggleKeyHelp = toggleKeyHelp;
 window.toggleEval = toggleEval;
 window.submitEval = submitEval;
