@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI MASTERY: 28 DAYS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #181825;
+    --accent: #e8ff47;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --text: #e8e8f0;
+    --text-muted: #6b6b80;
+    --border: #2a2a38;
+    --green: #22c55e;
+    --red: #ef4444;
+    --blue: #3b82f6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    padding: 40px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 8vw, 96px);
+    line-height: 0.9;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-shadow: 4px 4px 0px var(--accent3);
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .progress-global {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    min-width: 220px;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .progress-bar-wrap {
+    background: var(--border);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent3), var(--accent));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-nums {
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* WEEK TABS */
+  .week-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .week-tab {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .week-tab:hover { border-color: var(--accent3); color: var(--text); }
+  .week-tab.active {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: white;
+    font-weight: 600;
+  }
+
+  /* DAY GRID */
+  .week-section { display: none; }
+  .week-section.active { display: block; }
+
+  .week-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--accent2);
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .week-theme {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    font-weight: 400;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .day-card:hover { border-color: var(--accent3); transform: translateY(-2px); }
+  .day-card.completed { border-color: var(--green); }
+  .day-card.active-day { border-color: var(--accent); box-shadow: 0 0 20px rgba(232,255,71,0.1); }
+
+  .day-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .day-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text-muted);
+  }
+  .day-card.completed .day-num { color: var(--green); }
+  .day-card.active-day .day-num { color: var(--accent); }
+
+  .day-tool {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .day-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: var(--border);
+    color: var(--text-muted);
+  }
+  .day-card.completed .day-status { background: rgba(34,197,94,0.15); color: var(--green); }
+  .day-card.active-day .day-status { background: rgba(232,255,71,0.15); color: var(--accent); }
+
+  .day-card-body { padding: 16px 18px; }
+
+  .day-goal {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+
+  .day-tasks {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .day-task {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .task-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  .task-icon.teach { border-color: var(--blue); color: var(--blue); }
+  .task-icon.do { border-color: var(--accent2); color: var(--accent2); }
+  .task-icon.test { border-color: var(--accent); color: var(--accent); }
+
+  .day-card-footer {
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .time-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .complete-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--accent3);
+    background: transparent;
+    color: var(--accent3);
+    font-size: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .complete-btn:hover { background: var(--accent3); color: white; }
+  .complete-btn.done { border-color: var(--green); color: var(--green); }
+  .complete-btn.done:hover { background: var(--green); color: white; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .modal-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { border-color: var(--red); color: var(--red); }
+
+  .modal-body { padding: 24px 28px; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .teach-block {
+    background: var(--surface2);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .task-list-modal {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .task-item-modal {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--surface2);
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    border: 1px solid var(--border);
+  }
+
+  .task-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tag-teach { background: rgba(59,130,246,0.2); color: var(--blue); }
+  .tag-do { background: rgba(255,107,53,0.2); color: var(--accent2); }
+  .tag-test { background: rgba(232,255,71,0.2); color: var(--accent); }
+
+  .quiz-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .quiz-question {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .quiz-option {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 13px;
+    text-align: left;
+    transition: all 0.2s;
+  }
+
+  .quiz-option:hover { border-color: var(--accent3); }
+  .quiz-option.correct { border-color: var(--green); background: rgba(34,197,94,0.1); color: var(--green); }
+  .quiz-option.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: var(--red); }
+
+  .quiz-feedback {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid var(--green); }
+  .quiz-feedback.wrong { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid var(--red); }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-primary {
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: #d4eb3a; }
+
+  .btn-secondary {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+  }
+
+  /* SCARCITY NOTE */
+  .scarcity-note {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: #fca5a5;
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  /* MODAL TABS */
+  .modal-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .modal-tab {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .modal-tab:hover { color: var(--text); }
+  .modal-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* TUTOR PANEL */
+  #panelTutor {
+    display: none;
+    flex-direction: column;
+    height: 500px;
+  }
+  #chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+  }
+  .chat-bubble {
+    max-width: 88%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .chat-bubble.user {
+    align-self: flex-end;
+    background: var(--accent3);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+  .chat-bubble.assistant {
+    align-self: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 4px;
+  }
+  .chat-bubble.thinking {
+    align-self: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  .chat-input:focus { border-color: var(--accent3); }
+  .chat-send-btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent3);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .chat-send-btn:hover { background: #6d28d9; }
+  .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* TUTOR SECTION — always visible below modal body */
+  .tutor-section {
+    border-top: 2px solid var(--accent3);
+    display: flex;
+    flex-direction: column;
+  }
+  .tutor-section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: rgba(124,58,237,0.08);
+  }
+  .tutor-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--accent3);
+    font-weight: 600;
+  }
+  .tutor-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  #chatMessages {
+    min-height: 120px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chat-bubble {
+    max-width: 90%;
+    padding: 11px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .chat-bubble.user {
+    align-self: flex-end;
+    background: var(--accent3);
+    color: white;
+    border-bottom-right-radius: 3px;
+  }
+  .chat-bubble.assistant {
+    align-self: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-bottom-left-radius: 3px;
+  }
+  .chat-bubble.thinking {
+    align-self: flex-start;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  .chat-input-row {
+    display: flex;
+    gap: 10px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    padding: 9px 13px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.5;
+  }
+  .chat-input:focus { border-color: var(--accent3); }
+  .chat-send-btn {
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent3);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .chat-send-btn:hover { background: #6d28d9; }
+  .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* LESSON BLOCKS */
+  .lesson-block {
+    background: var(--surface2);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .lesson-block h4 {
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    color: var(--blue);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .lesson-point {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .lesson-point-bullet {
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>AI MASTERY<br>28 DAYS</h1>
+        <p class="subtitle">Personal Tutor Mode — Martin's Program</p>
+      </div>
+      <div class="progress-global">
+        <div class="progress-label">Overall Progress</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="globalBar" style="width:0%"></div>
+        </div>
+        <div class="progress-nums"><span id="completedCount">0</span> / 28 days completed</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>TEACH — concept</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent2)"></div>DO — hands-on task</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>TEST — quiz/challenge</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>COMPLETED</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>TODAY</div>
+  </div>
+
+  <div class="week-tabs">
+    <button class="week-tab active" onclick="showWeek(1)">WEEK 1 · Foundation</button>
+    <button class="week-tab" onclick="showWeek(2)">WEEK 2 · Creation</button>
+    <button class="week-tab" onclick="showWeek(3)">WEEK 3 · Specialisation</button>
+    <button class="week-tab" onclick="showWeek(4)">WEEK 4 · Integration</button>
+  </div>
+
+  <!-- WEEK 1 -->
+  <div class="week-section active" id="week1">
+    <div class="week-title">WEEK 1 <span class="week-theme">// FOUNDATION — Core AI Conversational Tools</span></div>
+    <div class="days-grid" id="grid-week1"></div>
+  </div>
+
+  <!-- WEEK 2 -->
+  <div class="week-section" id="week2">
+    <div class="week-title">WEEK 2 <span class="week-theme">// CREATION — Content & Code Generation</span></div>
+    <div class="days-grid" id="grid-week2"></div>
+  </div>
+
+  <!-- WEEK 3 -->
+  <div class="week-section" id="week3">
+    <div class="week-title">WEEK 3 <span class="week-theme">// SPECIALISATION — Domain-Specific AI</span></div>
+    <div class="days-grid" id="grid-week3"></div>
+  </div>
+
+  <!-- WEEK 4 -->
+  <div class="week-section" id="week4">
+    <div class="week-title">WEEK 4 <span class="week-theme">// INTEGRATION — Workflows & Capstone</span></div>
+    <div class="days-grid" id="grid-week4"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">DAY 1</div>
+        <div class="modal-subtitle" id="modalSubtitle">ChatGPT</div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">&#10005;</button>
+    </div>
+
+    <div class="modal-body" id="modalBody"></div>
+
+    <div class="tutor-section">
+      <div class="tutor-section-header">
+        <span class="tutor-label">🤖 LIVE AI TUTOR</span>
+        <span class="tutor-hint">Ask anything — go deeper, challenge concepts, get examples</span>
+      </div>
+      <div id="chatMessages"></div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" placeholder="Ask your tutor to explain more, give examples, or challenge you..." rows="2" onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-primary" id="markDoneBtn" onclick="markCurrentDone()">Mark Complete</button>
+      <button class="btn-secondary" onclick="closeModalDirect()">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var DAYS = [
+  // WEEK 1
+  {
+    day: 1, tool: "ChatGPT", week: 1,
+    goal: "Master prompt engineering fundamentals using the world's most-used AI.",
+    tasks: [
+      { type: "teach", text: "Learn the anatomy of a prompt: Role + Task + Context + Format + Constraints" },
+      { type: "do", text: "Write 5 prompts using the formula above. Topic: your own professional field or hobby." },
+      { type: "do", text: "Test zero-shot vs few-shot prompting: give examples vs no examples. Compare outputs." },
+      { type: "test", text: "Quiz: What makes a prompt fail? Identify 3 bad prompts and rewrite them." }
+    ],
+    quiz: {
+      q: "Which prompting strategy provides example input-output pairs before the main task?",
+      options: ["Zero-shot", "Few-shot", "Chain-of-thought", "System prompt"],
+      correct: 1,
+      feedback: "Correct! Few-shot prompting gives the model examples to pattern-match from. Zero-shot gives no examples. Chain-of-thought asks it to reason step-by-step."
+    }
+  },
+  {
+    day: 2, tool: "Claude (me!)", week: 1,
+    goal: "Understand how Claude differs from ChatGPT in reasoning, safety, and long-form tasks.",
+    tasks: [
+      { type: "teach", text: "Claude's core strengths: long-context (200k tokens), nuanced reasoning, reduced hallucination, Constitutional AI." },
+      { type: "do", text: "Give the SAME complex task to both Claude and ChatGPT. Document differences in tone, accuracy, and depth." },
+      { type: "do", text: "Test Claude on a multi-step analytical task in your domain. Observe how it handles ambiguity." },
+      { type: "test", text: "Challenge: Get Claude to change its answer using pressure alone. Can you? What does that tell you?" }
+    ],
+    quiz: {
+      q: "What is the approximate context window size of Claude's most capable model?",
+      options: ["8,000 tokens", "32,000 tokens", "100,000 tokens", "200,000 tokens"],
+      correct: 3,
+      feedback: "200,000 tokens — that's roughly 150,000 words or an entire novel. This makes Claude exceptional for document analysis and long conversations."
+    }
+  },
+  {
+    day: 3, tool: "Gemini", week: 1,
+    goal: "Leverage Google's AI for multimodal tasks and real-time web-connected reasoning.",
+    tasks: [
+      { type: "teach", text: "Gemini's edge: native multimodal (text+image+audio+video), Google ecosystem integration, real-time search via Gemini app." },
+      { type: "do", text: "Upload an image and ask Gemini to analyze, describe, and generate a creative caption. Compare with your own." },
+      { type: "do", text: "Ask Gemini a question requiring current data (today's news, live prices). Note how it handles it vs Claude." },
+      { type: "test", text: "Test: Give Gemini and ChatGPT the same image. Which gives a more accurate analysis?" }
+    ],
+    quiz: {
+      q: "What makes Gemini uniquely different from early versions of ChatGPT?",
+      options: ["It's faster", "It's natively multimodal from the ground up", "It has no hallucinations", "It only works in English"],
+      correct: 1,
+      feedback: "Gemini was designed multimodal from scratch — trained on text, images, audio, and video simultaneously. This is a fundamental architectural difference."
+    }
+  },
+  {
+    day: 4, tool: "Perplexity", week: 1,
+    goal: "Use AI-powered search to replace traditional Googling with cited, synthesised answers.",
+    tasks: [
+      { type: "teach", text: "Perplexity is a search engine + LLM hybrid. It cites sources in real-time, reducing hallucination risk significantly." },
+      { type: "do", text: "Research a complex topic in your field using Perplexity. Save 5 sources it cites. Verify 2 of them manually." },
+      { type: "do", text: "Compare: Google the same topic. Time both. Which gives you actionable insight faster?" },
+      { type: "test", text: "Critical challenge: Find one case where Perplexity's cited source contradicts what it summarised." }
+    ],
+    quiz: {
+      q: "What is Perplexity's primary advantage over a standalone LLM like ChatGPT for research?",
+      options: ["Better writing quality", "Real-time cited sources", "Cheaper pricing", "Larger context window"],
+      correct: 1,
+      feedback: "Perplexity retrieves and cites real-time web sources, dramatically reducing hallucination risk for factual queries. You can verify the sources directly."
+    }
+  },
+  {
+    day: 5, tool: "DeepSeek", week: 1,
+    goal: "Explore China's leading open-source LLM — and understand its implications for privacy and performance.",
+    tasks: [
+      { type: "teach", text: "DeepSeek R1 shocked the AI world with near-GPT-4 performance at a fraction of the cost. It's open-source and has privacy concerns (Chinese data laws)." },
+      { type: "do", text: "Test DeepSeek on a complex reasoning/math problem. Compare depth of logic to ChatGPT's answer." },
+      { type: "do", text: "IMPORTANT: Never input personal data, client data, or confidential info into DeepSeek. Test only with public/generic content." },
+      { type: "test", text: "Research task: Why did DeepSeek cause a $600B drop in Nvidia's market cap in January 2025? Explain in 5 sentences." }
+    ],
+    quiz: {
+      q: "Why should you be cautious about data privacy when using DeepSeek?",
+      options: ["It stores data on US servers", "Chinese data laws may compel data access by authorities", "It has no encryption", "It sells data to advertisers"],
+      correct: 1,
+      feedback: "DeepSeek is subject to Chinese cybersecurity and data laws, which can require companies to hand over user data to the government. For professional use, this is a real risk."
+    }
+  },
+  {
+    day: 6, tool: "Copilot", week: 1,
+    goal: "Integrate AI into Microsoft Office workflows — where most professional work actually happens.",
+    tasks: [
+      { type: "teach", text: "Microsoft Copilot is embedded in Word, Excel, PowerPoint, Teams, and Outlook. It transforms raw documents into actionable work." },
+      { type: "do", text: "If you have M365 access: Use Copilot to summarise a long email thread or draft a reply. Otherwise, test Copilot.microsoft.com." },
+      { type: "do", text: "Ask Copilot to convert a bullet-point list into a formatted business memo. Evaluate quality." },
+      { type: "test", text: "Scenario: You need to create a presentation from a Word document. What is the most efficient Copilot workflow?" }
+    ],
+    quiz: {
+      q: "Microsoft Copilot in Word can primarily do which of the following?",
+      options: ["Edit video content", "Draft, rewrite, and summarise documents in-context", "Generate images natively", "Replace Excel formulas automatically"],
+      correct: 1,
+      feedback: "Copilot's core strength in Word is drafting, rewriting, summarising, and transforming text — directly within your document context, referencing other M365 files."
+    }
+  },
+  {
+    day: 7, tool: "Grok", week: 1,
+    goal: "Experience Elon Musk's 'anti-woke' AI — understand its strengths, limitations, and X/Twitter integration.",
+    tasks: [
+      { type: "teach", text: "Grok (xAI) has real-time X/Twitter data access, a 'fun mode', and positions itself as less restricted than competitors. Verify claims critically." },
+      { type: "do", text: "Ask Grok something current and controversial. Evaluate: Is it insightful or just edgy? Cross-reference with Perplexity." },
+      { type: "do", text: "Test Grok's real-time X integration: Ask about a trending topic today and note source quality." },
+      { type: "test", text: "Critical thinking challenge: Identify one area where Grok's 'less restricted' stance might produce harmful output. Document it." }
+    ],
+    quiz: {
+      q: "What unique data source does Grok have access to that other major LLMs lack?",
+      options: ["Reddit posts", "Real-time X (Twitter) data", "Wikipedia edits", "Stock market feeds"],
+      correct: 1,
+      feedback: "Grok is the only major LLM with real-time X/Twitter data integration — valuable for social sentiment, breaking news, and trending topics analysis."
+    }
+  },
+
+  // WEEK 2
+  {
+    day: 8, tool: "Lovable", week: 2,
+    goal: "Build functional web apps with natural language — no coding required.",
+    tasks: [
+      { type: "teach", text: "Lovable (formerly GPT Engineer) converts natural language into full-stack web applications. It can deploy, iterate, and connect to databases." },
+      { type: "do", text: "Build a simple app: describe a tool you wish existed (e.g., 'a task tracker with priority levels'). Deploy it." },
+      { type: "do", text: "Iterate: Add a feature by describing it in plain language. Observe how Lovable maintains code coherence." },
+      { type: "test", text: "Constraint challenge: Build the same app twice — once with vague prompts, once precise. Compare results." }
+    ],
+    quiz: {
+      q: "What is the key advantage of tools like Lovable for non-developers?",
+      options: ["Free hosting forever", "Full-stack app generation from natural language", "Better security than hand-coded apps", "Automated SEO"],
+      correct: 1,
+      feedback: "Lovable's power is democratising full-stack development — from idea to deployed web app in minutes, no coding knowledge required. The bottleneck shifts to clear thinking, not syntax."
+    }
+  },
+  {
+    day: 9, tool: "Manus", week: 2,
+    goal: "Explore autonomous AI agents that can browse the web and complete multi-step tasks independently.",
+    tasks: [
+      { type: "teach", text: "Manus is an autonomous AI agent (agentic AI). It can plan, use tools, browse the web, write code, and complete tasks with minimal human input. This is the frontier of AI." },
+      { type: "do", text: "Assign Manus a multi-step research task: e.g., 'Research top 5 competitors of [company], summarise their pricing, create a comparison table.'" },
+      { type: "do", text: "Observe: Where does it succeed? Where does it hallucinate or get stuck? Document failure points." },
+      { type: "test", text: "Design a task where Manus SHOULD fail. Predict the failure point. Were you right?" }
+    ],
+    quiz: {
+      q: "What distinguishes an 'agentic' AI like Manus from a standard chatbot?",
+      options: ["It remembers all conversations", "It autonomously plans and executes multi-step tasks using tools", "It's always connected to the internet", "It has a personality"],
+      correct: 1,
+      feedback: "Agentic AI takes goals and executes multi-step plans autonomously — using tools like web search, code execution, and file operations. It's the difference between answering a question and completing a project."
+    }
+  },
+  {
+    day: 10, tool: "NanoBanana", week: 2,
+    goal: "Generate and edit images with Google's Gemini-powered image model.",
+    tasks: [
+      { type: "teach", text: "NanoBanana is powered by Google's Gemini image models (Nano Banana Pro = Gemini 3 Pro Image). It excels at character consistency, 4K output, and multi-turn image editing." },
+      { type: "do", text: "Create an image from scratch with a detailed text prompt. Focus on: subject, environment, lighting, style, mood." },
+      { type: "do", text: "Edit an existing photo: upload a portrait and change the background, style, or clothing using text commands." },
+      { type: "test", text: "Prompt engineering for images: Write a 'bad' prompt and a 'great' prompt for the same image. Document the quality difference." }
+    ],
+    quiz: {
+      q: "NanoBanana / Nano Banana Pro is built on which underlying technology?",
+      options: ["OpenAI DALL-E", "Stable Diffusion", "Google Gemini image models", "Meta Llama Vision"],
+      correct: 2,
+      feedback: "NanoBanana Pro is Google's Gemini 3 Pro Image model. It uses Gemini's reasoning and world knowledge to produce contextually accurate, high-resolution images."
+    }
+  },
+  {
+    day: 11, tool: "Leonardo AI", week: 2,
+    goal: "Master professional AI image generation with fine-tuned models and advanced controls.",
+    tasks: [
+      { type: "teach", text: "Leonardo AI offers fine-tuned models for specific styles, ControlNet for pose/structure control, and a suite of professional creative tools. It's used by game devs and marketers." },
+      { type: "do", text: "Generate 4 versions of the same concept using different Leonardo models. Compare art styles." },
+      { type: "do", text: "Use a 'reference image' to guide generation — match a character or composition style." },
+      { type: "test", text: "Create a coherent 4-image 'scene' (same character, different settings). Measure consistency." }
+    ],
+    quiz: {
+      q: "What feature of Leonardo AI makes it especially useful for consistent character creation in game development?",
+      options: ["Free unlimited generations", "Fine-tuned style models and reference image control", "Voice-to-image conversion", "Direct export to Unity"],
+      correct: 1,
+      feedback: "Leonardo's fine-tuned models and reference image/ControlNet features var creators maintain visual consistency across scenes — crucial for game assets, webtoons, and brand content."
+    }
+  },
+  {
+    day: 12, tool: "Meta AI", week: 2,
+    goal: "Leverage Meta's free LLM — available directly in WhatsApp, Instagram, and Facebook.",
+    tasks: [
+      { type: "teach", text: "Meta AI (powered by Llama) is embedded in WhatsApp, Instagram, Messenger, and Facebook. It's the most accessible AI for mass-market use cases." },
+      { type: "do", text: "Use Meta AI directly in WhatsApp (open the chat). Ask it to help draft a message, summarise content, or answer a complex question." },
+      { type: "do", text: "Test Meta AI's image generation: Ask it to 'imagine' something. Compare to Leonardo and NanoBanana." },
+      { type: "test", text: "Business case: Identify 3 practical use cases for Meta AI integration in a small business workflow." }
+    ],
+    quiz: {
+      q: "What is the primary distribution advantage of Meta AI over competitors?",
+      options: ["Cheaper API pricing", "Built into apps with billions of existing users (WhatsApp, Instagram)", "Better reasoning ability", "Open-source model weights"],
+      correct: 1,
+      feedback: "Meta AI's biggest advantage is distribution — it requires no new app download. Billions of WhatsApp and Instagram users can access it instantly, making it the most reachable AI on the planet."
+    }
+  },
+  {
+    day: 13, tool: "AssemblyAI", week: 2,
+    goal: "Convert audio and video to intelligent text — transcription, summarisation, and speaker identification.",
+    tasks: [
+      { type: "teach", text: "AssemblyAI is a speech AI API and platform. It transcribes audio with high accuracy, identifies speakers, detects sentiment, summarises content, and more." },
+      { type: "do", text: "Upload a podcast episode or meeting recording (even 5 minutes). Get a transcript + automatic summary." },
+      { type: "do", text: "Enable speaker diarisation — does it correctly identify different speakers? Evaluate accuracy." },
+      { type: "test", text: "Workflow challenge: How would you use AssemblyAI to process 10 customer support calls? Map the entire pipeline." }
+    ],
+    quiz: {
+      q: "What is 'speaker diarisation' in the context of AssemblyAI?",
+      options: ["Translating speech into multiple languages", "Identifying and labelling who said what in a recording", "Removing background noise", "Converting text to speech"],
+      correct: 1,
+      feedback: "Speaker diarisation segments audio by speaker — 'Speaker A said X, Speaker B said Y.' Crucial for meeting notes, interviews, and customer service call analysis."
+    }
+  },
+  {
+    day: 14, tool: "Canva AI", week: 2,
+    goal: "Create professional visual designs using AI without any design experience.",
+    tasks: [
+      { type: "teach", text: "Canva's Magic Suite includes: Magic Write (text), Magic Design (templates), Magic Edit (image editing), Text to Image, Magic Presentations, and more. It's a complete AI design system." },
+      { type: "do", text: "Create a social media post, a presentation slide, and a business card — all AI-assisted. Time yourself." },
+      { type: "do", text: "Use 'Magic Presentation': Give it a topic and var it generate a full slide deck. Edit the result." },
+      { type: "test", text: "Brand consistency test: Create 3 different content types (post, story, banner) with a coherent brand identity using only Canva AI." }
+    ],
+    quiz: {
+      q: "What does Canva's 'Magic Design' feature primarily do?",
+      options: ["Generates images from scratch", "Creates on-brand design templates from your uploaded content", "Writes marketing copy", "Animates static images"],
+      correct: 1,
+      feedback: "Magic Design generates complete, on-brand templates from your uploaded logo, photos, or content — the key is it respects your brand identity while handling all design decisions."
+    }
+  },
+
+  // WEEK 3
+  {
+    day: 15, tool: "Veo 3", week: 3,
+    goal: "Generate AI video with audio from text prompts using Google's most advanced video model.",
+    tasks: [
+      { type: "teach", text: "Veo 3 (Google DeepMind) generates high-quality video with native audio — dialogue, sound effects, ambient sound — directly from text. First model to crack realistic AI audio-video sync." },
+      { type: "do", text: "Create a 5-second video clip with a detailed scene description. Include character, action, environment, mood, and camera angle." },
+      { type: "do", text: "Experiment with cinematic prompting: 'shot on 35mm film', 'golden hour lighting', 'tracking shot'. Compare outputs." },
+      { type: "test", text: "Storyboard challenge: Plan a 3-scene 15-second story. Generate each scene. Does continuity hold?" }
+    ],
+    quiz: {
+      q: "What makes Veo 3 a significant breakthrough compared to earlier AI video tools?",
+      options: ["Longer video duration", "Native audio generation (dialogue + sound effects) synchronized with video", "Free unlimited access", "Real-time generation"],
+      correct: 1,
+      feedback: "Veo 3's breakthrough is native audio — previous tools required separate audio tools. Generating synchronized dialogue, sound effects, and ambience simultaneously is a genuine technical milestone."
+    }
+  },
+  {
+    day: 16, tool: "Sora 2", week: 3,
+    goal: "Explore OpenAI's flagship video generation model — and understand its creative possibilities.",
+    tasks: [
+      { type: "teach", text: "Sora (OpenAI) generates photorealistic video from text prompts. Sora 2 improves temporal consistency and motion quality. Available via ChatGPT Plus/Pro." },
+      { type: "do", text: "Generate the same video concept in both Veo 3 and Sora. Document: realism, motion, creativity, accuracy to prompt." },
+      { type: "do", text: "Test Sora's 'storyboard' feature: create multiple scenes and combine them." },
+      { type: "test", text: "Critical analysis: When would you choose Veo 3 over Sora, and vice versa? Write a 200-word comparison." }
+    ],
+    quiz: {
+      q: "Sora generates video by using which core AI architecture?",
+      options: ["Recurrent neural networks", "Diffusion transformers (DiT)", "Convolutional networks", "GANs (Generative Adversarial Networks)"],
+      correct: 1,
+      feedback: "Sora uses Diffusion Transformers — combining the spatial understanding of transformers with the generative power of diffusion models to achieve coherent video generation across time."
+    }
+  },
+  {
+    day: 17, tool: "Kimi", week: 3,
+    goal: "Test a massive-context Chinese LLM and understand its niche advantages.",
+    tasks: [
+      { type: "teach", text: "Kimi (Moonshot AI) is a Chinese LLM with a 1M+ token context window. Exceptional for processing entire codebases, academic papers, or books in one session." },
+      { type: "do", text: "Upload a very long document (try a full academic paper or legal contract). Ask Kimi to summarise, then ask specific cross-section questions." },
+      { type: "do", text: "Compare Kimi's long-document performance with Claude (also strong at long context). Note differences." },
+      { type: "test", text: "Privacy audit: What data would you NOT put into Kimi and why? Write your personal AI data policy." }
+    ],
+    quiz: {
+      q: "What is Kimi's primary competitive differentiator over most Western LLMs?",
+      options: ["Better image generation", "Extreme long-context window (1M+ tokens)", "Cheaper API access", "Better code generation"],
+      correct: 1,
+      feedback: "Kimi's 1M+ token context window (roughly 750,000+ words) is extreme — allowing analysis of entire books, codebases, or document archives in a single session."
+    }
+  },
+  {
+    day: 18, tool: "Kling", week: 3,
+    goal: "Generate professional AI video using a Chinese model that rivals Western competitors.",
+    tasks: [
+      { type: "teach", text: "Kling (Kuaishou) is a Chinese AI video generator with strong motion quality, image-to-video conversion, and competitive pricing. Often compared favourably to Sora for certain use cases." },
+      { type: "do", text: "Convert a static image (a photo or AI-generated image) into a 5-second video clip using Kling's image-to-video feature." },
+      { type: "do", text: "Generate the same scene with Kling and Sora/Veo. Score each on: motion realism, prompt adherence, visual quality." },
+      { type: "test", text: "Commercial case: Identify 3 industries where AI video tools like Kling could replace traditional video production costs." }
+    ],
+    quiz: {
+      q: "What specific feature of Kling is particularly useful for marketing and product teams?",
+      options: ["Voiceover generation", "Image-to-video conversion with consistent motion", "Real-time collaboration", "Direct social media publishing"],
+      correct: 1,
+      feedback: "Kling's image-to-video converts static product shots, illustrations, or AI images into video — dramatically lowering the cost of animated content for marketing."
+    }
+  },
+  {
+    day: 19, tool: "Runway", week: 3,
+    goal: "Master professional AI video editing — inpainting, motion brush, and the filmmaker's AI toolkit.",
+    tasks: [
+      { type: "teach", text: "Runway ML is the professional filmmaker's AI tool. Features: Gen-3 video, Inpainting (remove objects from video), Motion Brush, Green Screen, and Frame Interpolation." },
+      { type: "do", text: "Take a real video clip and use Runway to: remove an unwanted object OR change the background." },
+      { type: "do", text: "Use Motion Brush to animate a specific element in a still image." },
+      { type: "test", text: "Edit challenge: Start with a 10-second raw footage clip. Polish it using only AI tools (Runway + Canva AI for thumbnail). No traditional editing." }
+    ],
+    quiz: {
+      q: "What is Runway's 'inpainting' feature used for?",
+      options: ["Adding new objects to video", "Removing or replacing objects within existing video", "Changing video aspect ratio", "Adding music to video"],
+      correct: 1,
+      feedback: "Inpainting intelligently removes or replaces selected areas of a video — replacing what was there with AI-generated background that matches the scene. Previously, this required expensive VFX work."
+    }
+  },
+  {
+    day: 20, tool: "ElevenLabs", week: 3,
+    goal: "Clone voices, generate realistic speech, and understand the ethical implications.",
+    tasks: [
+      { type: "teach", text: "ElevenLabs generates ultra-realistic AI speech, voice cloning (from as little as 1 min of audio), multilingual dubbing, and sound effects. Industry standard for AI audio." },
+      { type: "do", text: "Generate a 60-second audio piece in 3 different voices. Observe emotional range and naturalness." },
+      { type: "do", text: "Create a voice clone using a short recording of your own voice. How accurate is it?" },
+      { type: "test", text: "Ethics audit: What safeguards should be in place before voice cloning is used commercially? Write 5 principles." }
+    ],
+    quiz: {
+      q: "What is the primary ethical risk of voice cloning technology like ElevenLabs?",
+      options: ["Audio quality loss", "Creating fraudulent audio impersonating real people without consent", "High cost", "Limited language support"],
+      correct: 1,
+      feedback: "Voice cloning can produce convincing impersonations — used maliciously for fraud, misinformation, or non-consensual content. ElevenLabs has consent policies, but enforcement is an ongoing challenge."
+    }
+  },
+  {
+    day: 21, tool: "Midjourney", week: 3,
+    goal: "Master the gold standard of AI art generation — prompt craft as a professional skill.",
+    tasks: [
+      { type: "teach", text: "Midjourney v6+ produces the highest-quality artistic images of any AI tool. It requires Discord access and specific prompt syntax. Prompt mastery is a genuine skill gap." },
+      { type: "do", text: "Learn core Midjourney parameters: --ar (aspect ratio), --v (version), --s (stylize), --q (quality). Use all 4 in one prompt." },
+      { type: "do", text: "Create 3 images in dramatically different styles: photorealistic, oil painting, and cyberpunk illustration — same subject." },
+      { type: "test", text: "Prompt archaeology: Take a stunning Midjourney image (from midjourney.com showcase). Reverse-engineer the prompt that created it." }
+    ],
+    quiz: {
+      q: "In Midjourney, what does the '--s' (stylize) parameter control?",
+      options: ["Image size", "How strongly Midjourney applies its artistic style vs following your prompt literally", "Saturation/color intensity", "Number of image variations"],
+      correct: 1,
+      feedback: "--s (stylize) ranges from 0-1000. Low values make the image follow your prompt precisely. High values var Midjourney be more 'artistic' and opinionated. Finding the balance is core to prompt craft."
+    }
+  },
+
+  // WEEK 4
+  {
+    day: 22, tool: "Cursor / GitHub Copilot", week: 4,
+    goal: "Write, debug, and ship code faster using AI pair programming tools.",
+    tasks: [
+      { type: "teach", text: "Cursor is an AI-native code editor (VS Code fork). GitHub Copilot integrates into any editor. Both allow autocomplete, chat-in-code, and whole-file generation from instructions." },
+      { type: "do", text: "Open Cursor and describe a small script in plain English (e.g., 'script that reads a CSV and outputs a summary'). Let AI write it. Run it." },
+      { type: "do", text: "Paste broken code and ask the AI to find and fix the bug. Document its reasoning process." },
+      { type: "test", text: "Code review: Use AI to review your own code for security vulnerabilities. What did it find?" }
+    ],
+    quiz: {
+      q: "What makes Cursor different from using GitHub Copilot as a VS Code extension?",
+      options: ["Cursor is free", "Cursor is built AI-first with chat, codebase understanding, and context at its core — not bolted on", "Cursor supports more languages", "Cursor has better autocomplete"],
+      correct: 1,
+      feedback: "Cursor is designed AI-first — it understands your entire codebase as context, enables chat alongside code, and allows 'apply' commands to the whole project. Copilot was added to an existing editor."
+    }
+  },
+  {
+    day: 23, tool: "Zapier AI / Make", week: 4,
+    goal: "Automate entire workflows by connecting AI tools with your existing apps.",
+    tasks: [
+      { type: "teach", text: "Zapier and Make.com connect 6000+ apps with AI logic. You can build: 'When X happens → AI processes it → Result goes to Y' — without coding." },
+      { type: "do", text: "Build one automation: e.g., 'New email in Gmail → Summarise with AI → Send summary to Slack.'" },
+      { type: "do", text: "Map out 5 repetitive tasks in your work/life that could be automated with AI+Zapier." },
+      { type: "test", text: "ROI calculation: For each automation, estimate hours saved per week × 52 weeks. What's the annual impact?" }
+    ],
+    quiz: {
+      q: "In a Zapier workflow, what is a 'Zap'?",
+      options: ["A payment transaction", "An automated workflow triggered by an event with defined actions", "A type of AI model", "A browser extension"],
+      correct: 1,
+      feedback: "A 'Zap' is an automated workflow: a Trigger (something happens) → one or more Actions (things that happen in response). Connecting AI to Zaps means every workflow can now include intelligence."
+    }
+  },
+  {
+    day: 24, tool: "NotebookLM", week: 4,
+    goal: "Transform your documents into an interactive AI-powered research assistant.",
+    tasks: [
+      { type: "teach", text: "Google's NotebookLM lets you upload your own documents, then chat with them as a grounded AI. It only uses YOUR sources — minimal hallucination. Also generates audio 'podcasts' from your docs." },
+      { type: "do", text: "Upload 5 documents on a topic you're studying. Ask cross-document questions. Save the most useful answers." },
+      { type: "do", text: "Generate a NotebookLM audio overview. Listen to it. How accurate is it vs the source?" },
+      { type: "test", text: "Stress test: Ask NotebookLM something that is NOT in your documents. How does it handle it? Compare to ChatGPT hallucinating." }
+    ],
+    quiz: {
+      q: "Why does NotebookLM have significantly lower hallucination risk than general LLMs?",
+      options: ["It has a smaller model", "It is grounded exclusively in your provided sources, not general training data", "It checks Wikipedia in real-time", "It uses a fact-checking algorithm"],
+      correct: 1,
+      feedback: "NotebookLM's 'grounding' means it can only cite and reason from documents YOU provided. It will tell you when something isn't in your sources rather than inventing an answer."
+    }
+  },
+  {
+    day: 25, tool: "Hugging Face / Open Source AI", week: 4,
+    goal: "Navigate the open-source AI ecosystem — run models locally, protect your data completely.",
+    tasks: [
+      { type: "teach", text: "Hugging Face hosts 500,000+ AI models. Tools like Ollama var you run LLMs locally (Llama 3, Mistral, Phi-4). Local = zero data risk, zero API costs, full privacy." },
+      { type: "do", text: "Install Ollama (free) and run a local LLM (Llama 3.1 or Mistral). Chat with it. Note: speed difference vs cloud." },
+      { type: "do", text: "Browse Hugging Face's model hub. Find 3 specialised models (e.g., code, medical, multilingual). What do they do?" },
+      { type: "test", text: "Privacy decision framework: Create a personal 'data classification' policy. Which tasks go to cloud AI vs local AI?" }
+    ],
+    quiz: {
+      q: "What is the primary advantage of running an LLM locally with Ollama?",
+      options: ["Better performance than cloud models", "Complete data privacy — no data leaves your computer", "Free forever with no limits", "Access to GPT-4 class models"],
+      correct: 1,
+      feedback: "Local LLMs process everything on your hardware. No data is transmitted. For confidential client work, medical records, legal documents — local models eliminate the data privacy risk entirely."
+    }
+  },
+  {
+    day: 26, tool: "AI Strategy & Prompt Systems", week: 4,
+    goal: "Build reusable prompt systems and personal AI workflows that multiply your output.",
+    tasks: [
+      { type: "teach", text: "Advanced prompting: System prompts, prompt chaining, meta-prompting, RAG (Retrieval Augmented Generation), and building personal prompt libraries." },
+      { type: "do", text: "Create your personal 'prompt library' — 10 prompts you'll use repeatedly in your work, fully engineered." },
+      { type: "do", text: "Design a prompt chain: Output of AI step 1 → becomes input of AI step 2 → final output. Document the pipeline." },
+      { type: "test", text: "The multiplier test: Using only AI tools learned this month, complete a task that previously took you 2 hours. Time it." }
+    ],
+    quiz: {
+      q: "What is 'prompt chaining' in advanced AI workflow design?",
+      options: ["Linking prompts together so the output of one becomes the input of the next", "Storing prompts in a database", "Using multiple AI tools simultaneously", "Chain-of-thought reasoning within one prompt"],
+      correct: 0,
+      feedback: "Prompt chaining is a workflow pattern: Step 1 output → Step 2 input → Step 3 input, etc. It breaks complex tasks into stages, with each AI step specialised for its part of the pipeline."
+    }
+  },
+  {
+    day: 27, tool: "AI Ethics & Critical Evaluation", week: 4,
+    goal: "Develop a rigorous framework for evaluating AI outputs, managing risks, and using AI responsibly.",
+    tasks: [
+      { type: "teach", text: "Critical AI use: hallucination detection, bias identification, data privacy assessment, intellectual property risks, and the psychological effects of AI dependence." },
+      { type: "do", text: "Deliberately get 3 different AI tools to hallucinate. Document how and why. What verification process would have caught it?" },
+      { type: "do", text: "Audit your past 30 days: Which tools did you use with sensitive data? Was that appropriate?" },
+      { type: "test", text: "Write your personal 10-point AI Ethics & Usage Policy. This becomes your professional standard." }
+    ],
+    quiz: {
+      q: "What is 'AI hallucination' and why is it dangerous in professional contexts?",
+      options: ["When AI generates images", "When AI confidently states false information as fact", "When AI refuses to answer", "When AI is slow to respond"],
+      correct: 1,
+      feedback: "Hallucination is when an LLM generates plausible-sounding but factually wrong information — with full confidence. In medical, legal, or financial contexts, acting on hallucinated 'facts' can cause real harm."
+    }
+  },
+  {
+    day: 28, tool: "Capstone Project", week: 4,
+    goal: "Integrate everything. Build a real project using 5+ tools learned this month.",
+    tasks: [
+      { type: "teach", text: "Capstone brief: Design and execute a complete AI-powered project relevant to your actual goals. Use minimum 5 tools from this program." },
+      { type: "do", text: "CAPSTONE: Create a real deliverable. Options: a business pitch deck (Canva AI + Claude + Perplexity), a short film (Sora/Kling + ElevenLabs + Runway), a research report (NotebookLM + Perplexity + Claude), or an automated workflow (Zapier + LLMs + AssemblyAI)." },
+      { type: "do", text: "Document your process: What worked, what failed, what surprised you, what you'd do differently." },
+      { type: "test", text: "Final reflection: In 500 words — how has your thinking about AI changed? What is your competitive advantage now?" }
+    ],
+    quiz: {
+      q: "Which combination of tools best demonstrates a complete AI-powered content production pipeline?",
+      options: [
+        "ChatGPT only",
+        "Perplexity (research) → Claude (write) → Canva AI (design) → ElevenLabs (narrate) → Kling (animate)",
+        "Midjourney + Sora",
+        "Google Docs + Grammarly"
+      ],
+      correct: 1,
+      feedback: "A multi-tool pipeline demonstrates true AI integration: research → writing → design → audio → video. Each tool handles what it's best at. This is how professionals 10x their output."
+    }
+  }
+];
+
+// LESSON CONTENT — rich per-day teaching material
+var LESSONS = {
+  1: {
+    title: "Prompt Engineering: The Skill That Multiplies Everything",
+    points: [
+      "ChatGPT is a next-token predictor — it has no memory, no intent, no understanding. It statistically continues your text based on patterns from its training data. This is why HOW you write matters enormously.",
+      "The anatomy of a power prompt: ROLE (who the AI should be) + TASK (what exactly to do) + CONTEXT (background it needs) + FORMAT (how to structure output) + CONSTRAINTS (what to avoid). Missing any one of these degrades results.",
+      "Zero-shot: you give no examples, just instructions. Few-shot: you give 2-5 examples of input→output before your real request. Few-shot dramatically improves consistency for structured tasks like data extraction or classification.",
+      "Chain-of-thought prompting: add 'think step by step' or 'reason through this before answering'. Forces the model to externalise its logic — catches errors it would otherwise skip past.",
+      "Temperature and randomness: ChatGPT has a creativity dial. High temperature = more creative, less predictable. Low = more deterministic. For factual tasks, lower is better. For brainstorming, higher.",
+      "The most common mistake: vague prompts. 'Write me something about marketing' is not a prompt. 'You are a CMO at a B2B SaaS company. Write a 200-word LinkedIn post explaining why most lead gen fails, aimed at founders. Avoid jargon. End with a provocative question.' — that is a prompt.",
+      "Iteration is the real skill. Your first prompt is a draft. Refine it based on output. The best prompters are relentless editors."
+    ]
+  },
+  2: {
+    title: "Claude: What Makes It Structurally Different",
+    points: [
+      "Claude was built on Constitutional AI — instead of pure RLHF (human feedback), Anthropic trained it against a set of principles. This makes it more consistent in refusing genuinely harmful requests while being less brittle on edge cases.",
+      "200,000 token context window (roughly 150,000 words — an entire novel). This is not just a bigger ChatGPT. It fundamentally changes what tasks are possible: full contract analysis, entire codebases, long research synthesis.",
+      "Claude is better calibrated for uncertainty — it more often says 'I'm not sure' rather than confidently hallucinating. Not perfect, but measurably more cautious on factual claims.",
+      "Claude excels at nuanced reasoning tasks: legal analysis, ethical dilemmas, complex instruction-following, and long-form writing that requires consistency over thousands of words.",
+      "Key weakness: Claude can be overly cautious on edge cases that are clearly benign. It also has a knowledge cutoff and cannot browse the web by default — unlike Perplexity or Gemini.",
+      "The critical test: give Claude and ChatGPT the same complex multi-step task. Claude tends to track all constraints simultaneously. ChatGPT tends to drift or drop constraints mid-response on very long tasks.",
+      "Use Claude when: you need consistent long-form output, you are working with large documents, you want reasoning that shows its work, or you need a model that will not sycophantically agree with you."
+    ]
+  },
+  3: {
+    title: "Gemini: Google's Multimodal Architecture and Why It Matters",
+    points: [
+      "Gemini was trained natively on text, images, audio, code, and video simultaneously — not separate models bolted together. This is a fundamental architectural difference from GPT-4V, where vision was added later.",
+      "Gemini 1.5 Pro has a 1M token context window (2M in some versions). It can process an entire film, a full codebase, or hours of audio in one session.",
+      "Google Workspace integration: Gemini sits inside Gmail, Docs, Sheets, Slides, and Meet. If your work lives in Google's ecosystem, this is not optional — it is your productivity infrastructure.",
+      "Real-time web access: Unlike Claude or base ChatGPT, Gemini (via the web app) searches Google in real time. For current events, pricing, or anything time-sensitive, this matters.",
+      "Gemini's weak points: it can be less direct than Claude, sometimes over-hedges, and the quality gap between Gemini Nano/Flash and Ultra/Pro is large. Make sure you are using the right tier.",
+      "Multimodal use cases: photograph a whiteboard and ask Gemini to turn it into a structured document. Photograph a product label and ask for safety analysis. Upload a chart image and ask for trend interpretation.",
+      "The Google ecosystem lock-in risk: Gemini is deeply embedded in Google products. Powerful yes — but be aware of the data implications of feeding your work documents through Google's AI systems."
+    ]
+  },
+  4: {
+    title: "Perplexity: Search Reimagined — And Its Limits",
+    points: [
+      "Perplexity is not a chatbot with search bolted on. It is fundamentally a search engine that uses an LLM to synthesise results into coherent answers, with numbered citations you can verify.",
+      "The hallucination problem in context: standard LLMs hallucinate because they generate from training data. Perplexity retrieves real documents first, then summarises them. This grounds the output in actual sources.",
+      "Perplexity Pro adds GPT-4, Claude, and Gemini as underlying models — it becomes a model-agnostic research interface. You can switch models mid-research session.",
+      "Where Perplexity beats Google: complex multi-part questions. 'What are the key differences between EU AI Act and the US Executive Order on AI, and what do they mean for a startup building a medical AI tool?' — Google gives you links, Perplexity gives you an answer.",
+      "Critical limitation: Perplexity can misrepresent sources. It may cite a paper correctly but subtly mischaracterise its findings in the summary. Always click through on high-stakes research.",
+      "Best use pattern: use Perplexity for the research layer, then bring findings into Claude or ChatGPT for synthesis, writing, or analysis. They are complementary, not competing.",
+      "Perplexity Spaces: a newer feature allowing persistent research environments where it remembers your project context across sessions. Underused but powerful for ongoing research projects."
+    ]
+  },
+  5: {
+    title: "DeepSeek: The Model That Shook the Industry",
+    points: [
+      "DeepSeek R1 was released in January 2025 and matched or exceeded GPT-4 on most benchmarks — at a reported training cost of ~$6M versus hundreds of millions for comparable Western models. This triggered a stock market shock, particularly for Nvidia.",
+      "The efficiency breakthrough came from Mixture of Experts (MoE) architecture — the model activates only a subset of its parameters per token, dramatically reducing compute. It is architecturally clever, not just scaled up.",
+      "DeepSeek R1 is an open-source model. Its weights are publicly available. This means anyone can run it locally, fine-tune it, or deploy it — removing dependency on OpenAI or Anthropic.",
+      "The privacy reality: DeepSeek's web interface is subject to Chinese data law (Cybersecurity Law, Data Security Law). Authorities can compel data access. For professional or sensitive use, the web app is a risk. Running the weights locally via Ollama eliminates this entirely.",
+      "Performance profile: DeepSeek R1 excels at reasoning and mathematics. It is competitive on coding. It is weaker on cultural nuance, English creative writing, and tasks requiring Western contextual knowledge.",
+      "The geopolitical layer: DeepSeek demonstrates that AI capability is no longer concentrated in the US. This has implications for regulation, competition, and the assumption that OpenAI/Anthropic/Google will remain the permanent frontier.",
+      "Practical rule: use DeepSeek for logic-heavy tasks with non-sensitive data. Never input client information, personal data, or proprietary business information into the web interface."
+    ]
+  },
+  6: {
+    title: "Microsoft Copilot: AI Embedded Where Work Actually Happens",
+    points: [
+      "Copilot is not a product — it is a layer embedded across all of Microsoft 365. Word, Excel, PowerPoint, Teams, Outlook, OneNote, and Loop all have Copilot integration. The vision is AI at every step of knowledge work.",
+      "In Word: Copilot can draft documents from a prompt, rewrite existing sections, summarise long documents, and reference other M365 files in the same tenant. 'Draft a proposal based on the brief in SharePoint and the budget in Excel' is a real command.",
+      "In Excel: natural language data analysis. 'Show me sales by region as a chart, highlight outliers' — no formula knowledge required. Copilot writes the formulas and builds the charts from plain English.",
+      "In Teams: meeting transcription, real-time summarisation, and action item extraction. After a 1-hour meeting, Copilot can give you a structured summary and a list of commitments made — automatically.",
+      "In Outlook: Copilot drafts replies, summarises long email threads, and flags action items. It can also coach you on email tone: 'make this more direct' or 'soften this before sending'.",
+      "The cost reality: Copilot for Microsoft 365 requires a separate licence (~$30/user/month on top of M365). For individuals, Copilot is available free in Bing and the Windows taskbar with GPT-4 class capability.",
+      "Key limitation: Copilot quality is highly dependent on your data being well-organised in M365. If your company's SharePoint is a mess, Copilot references will be unreliable. Garbage in, garbage out — at AI speed."
+    ]
+  },
+  7: {
+    title: "Grok: Real-Time X Data and the 'Less Restricted' Claim — What Is Actually True",
+    points: [
+      "Grok is built by xAI (Elon Musk's company) and is integrated into X (formerly Twitter). Its primary genuine differentiator is real-time access to X's full data firehose — every post, trend, and public conversation.",
+      "This makes Grok uniquely useful for: social sentiment analysis, tracking how narratives evolve in real time, identifying emerging topics before they hit mainstream media, and understanding public reaction to events as they happen.",
+      "The 'less restricted' positioning is partly marketing, partly real. Grok will engage with some controversial hypotheticals that Claude or ChatGPT refuse. Whether this is a feature or a bug depends entirely on your use case.",
+      "Grok 2 and Grok 3 show genuine capability improvements — competitive with GPT-4 class models on reasoning benchmarks. It is not a toy. The quality gap with frontier models has narrowed significantly.",
+      "Critical thinking required: Grok's X data is unfiltered. X's information ecosystem includes significant misinformation, coordinated inauthentic behaviour, and echo chambers. Grok inherits these biases. Treat X-sourced claims with higher scepticism than other sources.",
+      "Image generation: Grok includes Aurora, xAI's image model. It produces high-quality images and is notably less restricted on certain content categories than Midjourney or DALL-E.",
+      "Honest assessment: if your work involves real-time social data, media monitoring, or public discourse analysis, Grok has a genuine edge. For most other tasks, it is competitive but not clearly superior to alternatives."
+    ]
+  },
+  8: {
+    title: "Lovable: From Idea to Deployed App Without Writing Code",
+    points: [
+      "Lovable (formerly GPT Engineer) is a full-stack AI development environment. You describe what you want in natural language, and it generates React frontend + backend + database schema + deployment — as a complete working application.",
+      "The underlying model understands software architecture, not just syntax. It makes decisions about component structure, state management, and data flow. This is qualitatively different from GitHub Copilot suggesting the next line.",
+      "Iteration via conversation: once your app exists, you continue the conversation. 'Add a filter by date range to the dashboard' — Lovable modifies the existing codebase coherently, maintaining the established architecture.",
+      "Supabase integration: Lovable connects to Supabase (a Postgres-based backend-as-a-service) for persistent data, authentication, and file storage. Your app is not just a prototype — it can serve real users with real data.",
+      "The prompt quality cliff: vague descriptions produce vague apps. 'Build a CRM' will give you something generic. 'Build a CRM for a 5-person B2B sales team tracking leads, calls, and deal stages with a Kanban view and a weekly email digest' produces something useful.",
+      "Current limitations: complex business logic, intricate data relationships, and performance optimisation still require developer oversight. Lovable is excellent for MVPs and internal tools, less so for systems requiring fine-tuned performance.",
+      "Business application: for non-technical founders, Lovable collapses the time from idea to testable product from months to days. The bottleneck is no longer 'can I build this?' but 'is this the right thing to build?'"
+    ]
+  },
+  9: {
+    title: "Manus: Autonomous AI Agents — The Architecture of the Next Wave",
+    points: [
+      "Manus is an agentic AI system. The difference from a chatbot is fundamental: a chatbot answers questions in a single turn. An agent takes a goal, breaks it into subtasks, executes them using tools, evaluates results, and loops until the goal is achieved.",
+      "Manus can: browse the web, execute code, read and write files, fill forms, interact with web interfaces, send API calls, and chain all of these together. It operates like a junior analyst who never sleeps.",
+      "The ReAct pattern (Reason + Act): most agents alternate between reasoning about what to do next and taking an action. Manus exposes this loop — you can watch it think, act, observe results, and adjust.",
+      "Failure modes to understand: agents hallucinate subtasks (invent steps that do not exist), get stuck in loops, misinterpret ambiguous goals, and can cause real-world side effects if given broad permissions. Never give an agent access to production systems or financial accounts without strict guardrails.",
+      "The benchmark context: Manus scored highly on GAIA (a benchmark for general AI assistants requiring multi-step web research). However, benchmarks measure best-case performance. Real-world reliability is significantly lower.",
+      "Practical use today: multi-step research tasks, competitive analysis, data gathering from multiple web sources, and automating repetitive web-based workflows. Not yet reliable for high-stakes or irreversible actions.",
+      "The trajectory: agents are improving faster than base LLMs right now. The capability that feels unreliable today will be standard infrastructure within 18 months. Understanding agents now is the highest-leverage investment you can make."
+    ]
+  },
+  10: {
+    title: "NanoBanana / Gemini Image: Prompting for Visual Intelligence",
+    points: [
+      "NanoBanana Pro runs on Google's Gemini 3 image model — a diffusion architecture guided by Gemini's language understanding. The language model component means it understands complex compositional prompts better than earlier models.",
+      "Image prompt anatomy: Subject + Environment + Lighting + Style + Mood + Camera/Perspective + Technical parameters. Each element shapes the output. Missing lighting means the model guesses — often generically.",
+      "The quality gap between a basic and expert image prompt is enormous. 'A woman in a café' vs 'A 35-year-old woman with short dark hair reading a newspaper at a small marble table in a Parisian café, warm morning light through lace curtains, shallow depth of field, Leica film photograph aesthetic, muted warm tones' — these produce entirely different images.",
+      "Reference images: uploading a reference image alongside your prompt constrains the style space dramatically. The model tries to match the aesthetic of your reference rather than defaulting to its training distribution.",
+      "Iteration strategy: generate 4 variations, identify which elements work, and refine the prompt to preserve those while fixing what does not. Never discard a nearly-good image — study it to understand what the model interpreted.",
+      "Commercial awareness: AI-generated images from tools like NanoBanana are not automatically copyright-free. Depending on jurisdiction and the terms of service, usage rights vary. Understand the licensing before commercial use.",
+      "Ethical dimension: image models trained on scraped web data embed the biases of their training set — in representation of gender, race, age, and profession. Conscious prompting can counter this, but default outputs often reflect and amplify existing biases."
+    ]
+  },
+  11: {
+    title: "Leonardo AI: Professional Image Generation at Scale",
+    points: [
+      "Leonardo AI is built for professional creative production — game developers, concept artists, marketers, and content creators who need volume and consistency, not just one-off generation.",
+      "Fine-tuned models: Leonardo hosts dozens of community and official models trained on specific aesthetics — anime, photorealism, concept art, architectural visualisation, product photography. Choosing the right model is half the battle.",
+      "ControlNet: this is the critical feature separating Leonardo from basic generators. You can provide a pose reference, an edge map, or a depth map, and the model generates a new image that matches the structure of your reference while changing all other visual elements.",
+      "Character consistency: one of the hardest problems in AI image generation. Leonardo's Image Guidance and Character Reference features allow you to lock a character's appearance across multiple generated scenes — critical for webtoons, game assets, and brand characters.",
+      "The prompt weight system: Leonardo allows you to weight specific words in your prompt — (photorealistic:1.4) means push harder on realism, (oil painting:0.7) means apply but do not dominate. This gives fine control over style blending.",
+      "Batch generation economics: Leonardo's token system makes it viable to generate hundreds of image variants for A/B testing marketing creative at a fraction of traditional photography or illustration costs.",
+      "Limitation to know: despite improvements, hands and text within images remain weak points for diffusion models including Leonardo. Any prompt requiring legible text in the image will need post-processing or alternative approaches."
+    ]
+  },
+  12: {
+    title: "Meta AI: The AI Embedded in Platforms Used by 3 Billion People",
+    points: [
+      "Meta AI is powered by Llama — Meta's open-source LLM family. Llama 3.1 405B is genuinely frontier-class and freely available for download and deployment. Meta's open-source strategy is a deliberate competitive move against OpenAI's closed ecosystem.",
+      "Distribution advantage: Meta AI is embedded in WhatsApp, Instagram, Messenger, and Facebook. No new app, no subscription for basic use. For reaching non-technical audiences or building AI features for mass-market products, this is unmatched.",
+      "WhatsApp integration specifically: you can message Meta AI directly in WhatsApp, add it to group chats, and use it for instant translation, summarisation, and question-answering. For international business communication, this is immediately useful.",
+      "Image generation in Meta AI: type 'imagine [description]' and Meta AI generates an image inline in Instagram or Facebook. The quality is competitive with mid-tier dedicated generators. The friction is near-zero.",
+      "Llama as infrastructure: because Llama weights are open, companies are building fine-tuned versions for specific domains — medical, legal, code, multilingual. The ecosystem around Llama is growing faster than any proprietary model.",
+      "Privacy consideration: Meta's business model is advertising and data. While Meta states AI conversations are not used for ad targeting (as of 2025), the long-term data architecture is worth understanding before putting sensitive information into Meta AI.",
+      "The open vs closed debate: Meta's bet is that open-source AI accelerates adoption and builds a platform ecosystem. OpenAI's bet is that closed models allow quality control and commercial sustainability. Both strategies are currently viable — the winner is not yet determined."
+    ]
+  },
+  13: {
+    title: "AssemblyAI: Turning Audio Into Structured Intelligence",
+    points: [
+      "AssemblyAI is a speech AI API first, consumer product second. Its power is in programmatic access — developers use it to build transcription, analysis, and voice intelligence into products at scale.",
+      "Core capabilities beyond transcription: Speaker Diarisation (who said what), Sentiment Analysis (positive/negative/neutral per sentence), Entity Detection (names, places, organisations mentioned), Topic Detection (what subjects were discussed), and Auto Chapters (document structure from speech).",
+      "Accuracy benchmarks: AssemblyAI's Universal-2 model consistently ranks among the top performers on speech recognition benchmarks, particularly for English with background noise, accents, and technical vocabulary.",
+      "The business case is immediate: a 1-hour meeting generates ~8,000 words of transcript. Manually reviewed: 2 hours. AssemblyAI processed: 3 minutes to transcript, 30 seconds to structured summary with action items. For organisations running 10+ meetings a week, this is transformative.",
+      "LeMUR (Large Language Model Understanding and Reasoning): AssemblyAI's feature that runs an LLM over your transcript. Ask 'What were the three main objections the client raised?' and get a precise, sourced answer from your meeting audio.",
+      "Competitive landscape: Whisper (OpenAI, open-source) is free and good for standard transcription. AssemblyAI wins on accuracy for noisy audio, the intelligence layer (sentiment, entities, topics), and enterprise reliability. They serve different use cases.",
+      "Privacy and compliance: audio often contains sensitive personal data. AssemblyAI offers data deletion policies and SOC 2 compliance. For healthcare, legal, or HR audio processing, verify compliance requirements before deployment."
+    ]
+  },
+  14: {
+    title: "Canva AI: The Complete Design System for Non-Designers",
+    points: [
+      "Canva's AI features are not cosmetic additions — they represent a fundamental shift in who can produce professional-quality visual communication. Magic Suite comprises over a dozen distinct AI capabilities integrated into the design workflow.",
+      "Magic Design: upload your logo, brand colours, or a photo, and Canva generates dozens of on-brand template options. It reads your visual inputs and applies them consistently across formats (post, story, presentation, banner). This replaces the 'start from blank' problem.",
+      "Magic Write: Canva's integrated LLM for copy. Briefed with your design context, it generates headlines, body copy, and CTAs aware of what visual space they need to fit. Unlike using ChatGPT separately, it understands the design constraints.",
+      "Text to Image: generate custom illustrations, backgrounds, and hero images directly inside your design canvas. The workflow integration matters — no import/export friction, images sized and placed automatically.",
+      "Magic Presentations: describe your presentation topic and Canva generates a full multi-slide deck with suggested structure, placeholder content, and visual hierarchy. The starting point is dramatically better than a blank slide.",
+      "Brand Kit AI: Canva can extract your brand palette, fonts, and style from existing materials and apply them automatically across all new designs. For teams, this solves the brand consistency problem without a design police function.",
+      "The critical skill shift: Canva AI removes execution barriers but not thinking barriers. The skill that becomes more valuable is visual communication strategy — knowing what to communicate, to whom, in what format — not the software operation itself."
+    ]
+  },
+  15: {
+    title: "Veo 3: Native Audio-Video Generation — A Genuine Technical Milestone",
+    points: [
+      "Veo 3 (Google DeepMind, 2025) is the first commercially available model to generate video with native audio — dialogue, sound effects, ambient noise, and music — all produced simultaneously and synchronised with the visual content.",
+      "Why audio sync was hard: previous models generated video and audio as separate streams and attempted post-hoc alignment. Veo 3 generates both in a shared latent space, meaning the timing relationship between what you see and hear is learned, not engineered.",
+      "Cinematic prompting vocabulary: Veo 3 responds to film production language. 'Tracking shot', 'dolly zoom', 'rack focus', 'golden hour', 'anamorphic lens flare', '16mm film grain' — these are not decorative — they change the physics of how the generated camera and light behave.",
+      "Temporal consistency: Veo 3's key improvement over earlier video models is maintaining visual consistency across frames — the same character looks the same at frame 1 and frame 150. This was a major failure mode in early video AI.",
+      "Current limitations: Veo 3 generates clips of roughly 8 seconds. Multi-shot coherent storytelling requires multiple generations and external editing. Text rendering in video remains unreliable. Physics simulations (liquids, cloth, hair) are improved but not photorealistic.",
+      "Access: Veo 3 is available through Google's VideoFX (waitlist) and via the Gemini Ultra tier. Not freely available — this is deliberate, as Google manages compute demand and potential misuse of realistic video generation.",
+      "The media industry implication: a skilled prompt engineer with Veo 3 can produce advertising-quality short-form video without a camera, crew, location, or studio. The cost collapse for short video production is real and happening now."
+    ]
+  },
+  16: {
+    title: "Sora 2: OpenAI's Video Model — Architecture and Creative Applications",
+    points: [
+      "Sora uses a Diffusion Transformer (DiT) architecture — applying transformer attention mechanisms to the diffusion process. This allows the model to understand temporal relationships across the full video duration, not just frame-by-frame.",
+      "Sora treats video as 'visual patches across space and time' — similar to how language models treat text as tokens. This is why it can maintain object persistence and consistent motion in ways that earlier video models could not.",
+      "Sora 2 improvements over original Sora: longer coherent clips (up to 20 seconds), better physics simulation, improved prompt adherence for complex scenes, and significantly faster generation time.",
+      "Storyboard feature: Sora allows you to build a sequence of shots from a storyboard interface — define the narrative arc, assign prompts to scenes, and generate them with directional continuity. This moves toward actual filmmaking workflow.",
+      "Prompt strategy difference from Veo: Sora tends to interpret prompts more literally and with more stylistic freedom. Veo tends toward realism by default. For stylised or surreal content, Sora often produces more interesting results. For documentary-style realism, Veo has an edge.",
+      "Safety architecture: Sora has filters for generating likenesses of real people, violent content, and synthetic intimate imagery. These filters are imperfect but intentional. OpenAI has faced criticism for both over- and under-restriction depending on the audience.",
+      "The creative professional's honest assessment: neither Sora nor Veo replaces cinematography for feature films. They replace stock video, simple explainers, concept visualisations, and social media content — a multi-billion-dollar market that is now genuinely disrupted."
+    ]
+  },
+  17: {
+    title: "Kimi: Extreme Long Context — When Size of Input Is the Constraint",
+    points: [
+      "Kimi (Moonshot AI) built its reputation on one capability: extreme context length. The original Kimi supported 200K tokens when most models managed 8-32K. Current versions support 1M+ tokens — enough to process multiple books, full codebases, or years of documents simultaneously.",
+      "Why context length matters: most LLM limitations are not about intelligence — they are about what the model can 'see' at once. A 4K token model analysing a 100-page contract must chunk it and loses cross-section relationships. Kimi sees the whole document at once.",
+      "Specific use cases where Kimi excels: analysing an entire legal contract corpus for contradictions, processing a full software codebase to understand architecture, reading all quarterly reports for a company and identifying multi-year trends, and academic literature reviews across dozens of papers simultaneously.",
+      "Performance outside long-context: Kimi is competitive but not clearly leading on standard benchmarks outside its context specialisation. For short-to-medium tasks, Claude or GPT-4 class models are comparable or better.",
+      "The Chinese AI landscape context: Kimi sits alongside DeepSeek, Baidu's ERNIE, Alibaba's Qwen, and others in a highly competitive domestic market. Chinese AI labs are well-funded, technically serious, and moving fast — do not underestimate this ecosystem.",
+      "Privacy considerations: same framework as DeepSeek — Chinese data law jurisdiction applies to the web interface. For sensitive documents, run locally or use Western-jurisdiction alternatives. For public research or generic analysis, risk is lower.",
+      "Practical test worth doing: find the longest document you work with regularly. Process it in Kimi. Ask questions that require connecting information from the beginning, middle, and end. This is where the long-context advantage is most tangible."
+    ]
+  },
+  18: {
+    title: "Kling: Image-to-Video and the Economics of Motion",
+    points: [
+      "Kling (by Kuaishou, China's short-video platform) emerged as a serious competitor to Sora and Runway by producing high-quality video at lower cost with strong motion quality — particularly for image-to-video conversion.",
+      "Image-to-video is Kling's strongest differentiator: take a static image — photograph, illustration, or AI-generated art — and animate it into a coherent video clip. The model infers plausible motion from a single frame.",
+      "Motion quality comparison: Kling handles complex motion (hair, fabric, water, facial expressions) with fewer artefacts than many competitors at the same price tier. The physics of secondary motion (things moving as a consequence of primary motion) is noticeably better.",
+      "Camera control: Kling offers explicit camera movement controls — push in, pull out, pan left/right, orbit, crane up/down. These are not keywords — they are structured controls that directly govern camera path generation.",
+      "The production workflow: Kling fits naturally after Leonardo AI or Midjourney in a pipeline. Generate a character or scene at high quality in an image tool → bring to Kling → animate with specified motion → edit in Runway. Each tool does what it does best.",
+      "Commercial viability: Kling's subscription pricing makes high-volume video production economically viable for small teams. A social media team generating daily video content can replace a significant portion of traditional production budget.",
+      "The geopolitical tension in AI tools: Kling, like DeepSeek and Kimi, is subject to Chinese data law. For projects involving proprietary creative assets (brand characters, unreleased products), assess whether the legal risk of using a Chinese-jurisdiction AI tool is acceptable."
+    ]
+  },
+  19: {
+    title: "Runway: The Professional's AI Video Editing Suite",
+    points: [
+      "Runway ML is the tool actually used by working filmmakers and VFX artists — not just enthusiasts. It combines generation (Gen-3 Alpha) with powerful editing tools in a single professional-grade platform.",
+      "Gen-3 Alpha generates video from text or image prompts with strong temporal consistency. But Runway's real power is the editing suite layered on top — this is what separates it from pure generation tools.",
+      "Inpainting: select a region of a video frame and Runway regenerates it, seamlessly integrating with the surrounding context. Remove a logo from a product shot. Remove a microphone boom that slipped into frame. Replace a grey sky with a dramatic sunset. These are previously expensive VFX operations now available in a browser.",
+      "Motion Brush: paint motion onto specific elements of a still image. Point at clouds and define their direction of movement. Point at a character's hair and indicate flow. The model generates realistic motion for only those elements you designate.",
+      "Act One: Runway's character performance capture — use a standard webcam to capture facial performance and apply it to a digital character. Lowers the barrier to animated content production significantly.",
+      "Frame Interpolation: smooth slow-motion from standard frame-rate footage, or extend the duration of a clip by generating intermediate frames. Useful for turning short generations into longer usable clips.",
+      "The honest limitation: Runway requires genuine creative judgment to use well. The tools are powerful but they amplify your decisions — a poor creative brief produces poor output even with professional tools. The skill floor has been lowered; the ceiling has not."
+    ]
+  },
+  20: {
+    title: "ElevenLabs: Voice Synthesis and the Responsibility That Comes With It",
+    points: [
+      "ElevenLabs produces the most natural AI speech currently available. The key technical advances are prosody (natural rhythm and emphasis), emotional range (the model varies expression based on content), and voice consistency across long-form output.",
+      "Voice cloning: ElevenLabs can clone a voice from as little as one minute of audio. The clone captures accent, timbre, speech rhythm, and emotional baseline. From two to three minutes, the quality becomes difficult to distinguish from the original.",
+      "Legitimate use cases are significant: audiobook production (authors recording their own books once, then generating all future editions in their voice), accessibility (personalised TTS for individuals with speech difficulties), content localisation (dubbing video content into 30+ languages while preserving the speaker's voice characteristics).",
+      "The ethical architecture: ElevenLabs requires consent verification for cloning voices of identifiable individuals. They use a voice detection system to flag cloned celebrity voices. These safeguards exist but are not perfect — this is an ongoing arms race.",
+      "The misuse landscape is real: voice fraud cases using ElevenLabs-style synthesis have been documented — fake CEO calls authorising wire transfers, fake family emergency calls. This technology requires thoughtful deployment and clear disclosure policies.",
+      "Sound Effects and Music: ElevenLabs has expanded beyond voice into generated sound effects (describe a sound, get an audio file) and AI music generation. The audio production stack is becoming completeable within a single platform.",
+      "Professional standard: if you are producing any audio content — podcasts, video narration, training materials, accessibility features — ElevenLabs is now the baseline for quality. The question is not whether to use AI voice, but how to use it responsibly and transparently."
+    ]
+  },
+  21: {
+    title: "Midjourney: Prompt Craft as Artistic Discipline",
+    points: [
+      "Midjourney v6 produces consistently the highest-quality artistic images of any current AI model — with a distinctive aesthetic bias toward beauty, drama, and visual coherence. This is a trained preference, not neutrality. Understand it and work with or against it deliberately.",
+      "The Discord interface is intentional: Midjourney's team believes generation should be a social, iterative, observational process. You see what others are generating. This is a feature for learning — study the prompts that produce results you admire.",
+      "Core parameters: --ar [ratio] sets aspect ratio (16:9 for video, 1:1 for social, 2:3 for portrait). --v 6 specifies the model version. --s [0-1000] controls how strongly Midjourney applies its aesthetic taste versus following your prompt literally. --q [0.25-2] controls quality/speed tradeoff. --chaos [0-100] increases variation between generations.",
+      "Prompt weight syntax: (term:weight) adjusts emphasis. (photorealistic:1.4) pushes harder on realism. (watercolour:0.6) applies the style lightly. Negative weighting: --no [term] excludes elements. '--no text' is essential for most non-graphic-design prompts.",
+      "Image prompting (i-prompting): prefix your prompt with an image URL to use it as a visual reference. Combine with --iw [0-2] to control how much the reference image influences the output versus your text prompt.",
+      "Describe and remix: take an existing image and ask Midjourney to /describe it — the model reverse-engineers a prompt. Use this to learn prompt language from images you admire, then remix those prompts with your own variations.",
+      "The commercial layer: Midjourney Pro subscribers own the images they generate for commercial use. Free and Basic tier users do not. Understand the licence terms before using generated images in client work or product development."
+    ]
+  },
+  22: {
+    title: "Cursor and AI Coding: The End of Writing Code Alone",
+    points: [
+      "Cursor is VS Code with AI baked into the core architecture — not as an extension but as the primary interface. The model understands your entire codebase as context, not just the file you have open.",
+      "Cmd+K (inline edit): highlight any code and describe the change in plain English. 'Refactor this to use async/await' or 'Add input validation that returns a 400 if email is missing'. The change is applied inline and you accept or reject it.",
+      "Cmd+L (chat panel): a persistent conversation with full codebase context. 'Why is the user authentication failing for OAuth providers?' — the model reasons across your auth files, middleware, and config simultaneously.",
+      "Composer (Cmd+I): give a high-level instruction and Cursor makes changes across multiple files simultaneously. 'Add a dark mode toggle that persists to localStorage and applies a CSS class to the root element' — it touches the component, the CSS, and the storage logic.",
+      "The skill shift: the bottleneck moves from syntax and API memorisation to system design and requirement clarity. Developers who can clearly specify what they want — in precise, unambiguous terms — get dramatically better output. Vague instructions produce vague code.",
+      "Debugging with AI: paste an error message with the stack trace. Cursor traces the error through your actual files and explains the root cause with the specific line numbers in your code. This alone saves significant debugging time.",
+      "Non-developer use: Cursor lowers the threshold for writing useful scripts and automations. If you can clearly describe what you want a script to do, Cursor can write it, explain it, and iterate on it with you — even without programming knowledge. This is a genuine capability expansion for non-technical professionals."
+    ]
+  },
+  23: {
+    title: "Zapier and Make: Automating the Connective Tissue of Your Work",
+    points: [
+      "Zapier and Make (formerly Integromat) are automation platforms that connect 5,000+ applications. The core primitive is: Trigger (something happens) → Action (something else happens automatically). AI transforms this from rule-based to intelligent.",
+      "AI steps in Zapier: you can insert a 'ChatGPT' or 'Claude' step anywhere in a workflow. 'When a new support ticket arrives in Zendesk → send to Claude with your classification prompt → route to the correct team based on Claude's response'. The workflow gains judgment.",
+      "Make.com difference from Zapier: Make uses a visual canvas with branching logic, loops, and conditional paths. More complex workflows are easier to visualise and debug. Zapier is more accessible for simple linear automations. Use Zapier to start, graduate to Make for complexity.",
+      "High-value automation patterns: new lead in CRM → research company with Perplexity → draft personalised outreach with Claude → add to email sequence. New customer support email → classify intent with AI → draft reply → flag for human review if confidence below threshold.",
+      "The build vs buy calculation: before automating, map the process manually and time it. Automation has upfront build cost and ongoing maintenance. A task taking 5 minutes twice a week (8 hours/year) may not justify a complex automation. A task taking 30 minutes daily (130 hours/year) almost always does.",
+      "Error handling matters more than you expect: automations fail — APIs go down, data formats change, edge cases appear. Build error notifications into every workflow from the start. Silent failures are worse than visible ones.",
+      "The compounding return: each automation you build teaches you patterns. Your second automation takes half the time of your first. By your tenth, you are identifying automation opportunities everywhere. The skill compounds faster than almost any other productivity investment."
+    ]
+  },
+  24: {
+    title: "NotebookLM: AI That Only Knows What You Tell It",
+    points: [
+      "NotebookLM's core design principle is grounding — it operates exclusively from the documents you upload. It will not answer from general training knowledge and will explicitly tell you when something is not in your sources. This makes it epistemically trustworthy in a way general LLMs are not.",
+      "Source types accepted: PDFs, Google Docs, Google Slides, web URLs, YouTube video URLs, and pasted text. For YouTube, it uses the video transcript. Upload up to 50 sources per notebook (approximately 25 million words total).",
+      "The Notebook Guide: when you add sources, NotebookLM automatically generates a structured overview — key themes, questions the sources address, and suggested areas to explore. This is a fast way to orient yourself in an unfamiliar domain.",
+      "Cross-document synthesis: ask 'What are the points of agreement and disagreement between the McKinsey report and the Gartner analysis on AI adoption?' — NotebookLM synthesises across sources and cites the specific passage in each document supporting each point.",
+      "Audio Overview (Podcast mode): NotebookLM generates a 10-15 minute conversational audio discussion of your sources — two synthetic hosts discussing the key themes, debating implications, and explaining concepts. Useful for absorbing material while commuting or exercising.",
+      "Inline citations: every NotebookLM response includes numbered citations linking to the exact passage in your source document. Click the citation to see the original text. This is the fundamental trust mechanism — you can always verify.",
+      "Use case that transforms research: load all your competitor's public documentation, press releases, and product pages into a notebook. Ask 'What pricing signals can we infer from their public communications?' or 'Where do their product gaps appear based on customer review patterns?' — grounded competitive intelligence in minutes."
+    ]
+  },
+  25: {
+    title: "Hugging Face and Local AI: Full Privacy, Zero Dependency",
+    points: [
+      "Hugging Face is the GitHub of AI — a repository hosting 500,000+ models, 100,000+ datasets, and 150,000+ demo applications. It is where the AI research community publishes, shares, and builds on each other's work.",
+      "Ollama is a local model runtime: install it, pull a model (like 'ollama pull llama3.1'), and run a full LLM entirely on your machine with a single command. No API key, no subscription, no data transmission. Your hardware, your privacy.",
+      "Hardware reality check: running a 7B parameter model requires approximately 8GB RAM (or VRAM for GPU acceleration). 13B needs 16GB. 70B needs 40GB+ or will be very slow on CPU. Modern MacBooks with 16-32GB unified memory run 13B models reasonably well.",
+      "Model families worth knowing: Llama 3.1 (Meta, strong general capability), Mistral/Mixtral (French lab, excellent efficiency), Phi-4 (Microsoft, strong reasoning relative to size), Qwen2.5 (Alibaba, strong multilingual and coding), DeepSeek-R1 (reasoning specialist). All available via Ollama.",
+      "Fine-tuning: Hugging Face provides the infrastructure to take an open-source base model and train it on your specific data — creating a model that specialises in your domain, speaks in your organisation's voice, and never shares your data with a third party.",
+      "The privacy framework decision tree: Is this data public or generic? → Use cloud AI freely. Is this data sensitive but not regulated? → Assess risk and use judgment. Is this data regulated (GDPR, HIPAA, legal privilege)? → Local model only. This framework protects you and your clients.",
+      "The emerging professional standard: organisations that handle sensitive data are increasingly building private AI stacks — local models or private cloud deployments — not because cloud AI is untrustworthy, but because data sovereignty is a legal and contractual requirement."
+    ]
+  },
+  26: {
+    title: "Prompt Systems and AI Workflow Architecture",
+    points: [
+      "A prompt library is not a collection of clever one-liners. It is a system of tested, versioned, purpose-built prompts for recurring tasks in your work — each one refined over multiple iterations and documented with the context in which it performs well.",
+      "System prompts define identity: the system prompt runs before the conversation and sets the model's role, constraints, tone, and output format permanently for that session. A well-crafted system prompt can transform a general model into a specialised expert for your use case.",
+      "Prompt chaining is workflow engineering: break complex tasks into stages where the output of each step becomes a structured input to the next. 'Analyse → summarise → critique → rewrite' as a four-step chain produces dramatically better output than asking for all four simultaneously.",
+      "RAG (Retrieval Augmented Generation): instead of cramming all context into a prompt, store knowledge in a vector database and retrieve only the relevant chunks at inference time. This is how production AI applications manage the context window efficiently — and why NotebookLM works the way it does.",
+      "Meta-prompting: write prompts that generate better prompts. 'You are an expert prompt engineer. I need to create a prompt that [goal]. My current attempt is [prompt]. Identify weaknesses and rewrite it.' This self-improvement loop compounds quickly.",
+      "Output format engineering: structuring your prompt to demand specific output formats (JSON, markdown, numbered lists, tables) makes downstream processing dramatically easier. 'Return a JSON object with fields: summary (string), action_items (array), sentiment (positive/neutral/negative)' transforms free-text output into structured data.",
+      "Version control your prompts: treat prompts like code. Store them with version numbers, document what changed and why, and record performance differences. A prompt that worked six months ago on GPT-3.5 may need adjustment on GPT-4 or Claude 3. Institutional prompt knowledge compounds over time if captured."
+    ]
+  },
+  27: {
+    title: "AI Ethics and Critical Evaluation: The Foundation of Professional Use",
+    points: [
+      "Hallucination is structural, not a bug to be patched: LLMs generate the statistically most likely next token. They do not look things up — they predict. Confident-sounding false statements are an inherent property of the architecture, not a failure mode that will be eliminated. Your verification processes must account for this permanently.",
+      "The Bullshit Asymmetry Principle applied to AI: it takes an AI a fraction of a second to generate a plausible-sounding but false claim. It takes you minutes to verify or refute it. This asymmetry means unverified AI output at scale creates information risk proportional to volume.",
+      "Bias is embedded in training data: models trained on internet text inherit the biases of internet text — which overrepresents certain demographics, perspectives, languages, and worldviews. Every AI system reflects the corpus it was trained on. This is not neutral; it is a design choice with consequences.",
+      "The data privacy matrix: different data types carry different risks. Personal health data, legal documents, financial records, and client information each have regulatory frameworks (GDPR, HIPAA, attorney-client privilege) that constrain where they can be processed. Know the rules before you automate.",
+      "Intellectual property and AI: the legal status of AI-generated content is unsettled across jurisdictions. Training data copyright suits are ongoing. Output ownership varies by tool terms of service. For commercial use, read the licence. For professional work, understand your jurisdiction's current position.",
+      "Dependency risk: over-reliance on any single AI provider creates strategic exposure. If OpenAI changes its pricing or terms, if Anthropic has an outage, if a tool is acquired — your workflows break. Diversification and local fallbacks are risk management, not just technical preference.",
+      "The psychological effects deserve serious attention: AI systems that are optimised for engagement can create patterns of dependence, reduced tolerance for uncertainty, and diminished critical thinking if used without conscious awareness. The professional use of AI requires metacognitive monitoring — regularly asking whether your judgment is improving or atrophying."
+    ]
+  },
+  28: {
+    title: "Capstone: Integration Is the Real Skill",
+    points: [
+      "The 28-day programme has given you exposure to every major category of AI tool: conversational LLMs, search AI, image generation, video generation, audio synthesis, code generation, automation, document intelligence, and local/private AI. The point was never to master each tool — it was to build a map of the landscape.",
+      "Integration is where the real leverage lives: a single tool used well produces linear gains. A well-designed multi-tool pipeline produces compound gains. The best AI practitioners are systems thinkers — they design workflows where each tool does what it uniquely does best.",
+      "Your competitive advantage is not knowing how to use AI — everyone will know how to use AI. Your advantage is knowing when to use which tool, how to chain them intelligently, how to evaluate their output critically, and how to identify the tasks where AI genuinely adds value versus where it creates noise.",
+      "The evaluation framework you should carry forward: for every AI-assisted task, ask — Is the output verifiable? Did I maintain intellectual ownership of the judgment, or did I delegate it? Would I stake my professional reputation on this output without review? The answer shapes how you deploy each tool.",
+      "The capability curve is steeper than most people account for: what feels like a frontier capability today (autonomous agents, multimodal reasoning, voice interaction) will be commodity infrastructure within two to three years. Stay oriented to what is coming, not just what is current.",
+      "Document what you have built: your prompt library, your workflow automations, your use case templates, and your personal AI policy are professional assets. They compound in value. Share them with your team. They differentiate you.",
+      "The final and most important point: AI is a tool for people who know what they want. The clearer your thinking, the more precise your goals, and the more rigorous your standards — the more AI amplifies you. Without those foundations, AI amplifies confusion at speed. Everything in this programme was designed to make you a sharper thinker first, and a better AI user second."
+    ]
+  }
+};
+
+// State management — safe localStorage wrapper (blocked in some sandboxes)
+function safeLoad() {
+  try { return new Set(JSON.parse(localStorage.getItem('ai28_completed') || '[]')); }
+  catch(e) { return new Set(); }
+}
+function safeSave(s) {
+  try { localStorage.setItem('ai28_completed', JSON.stringify([...s])); } catch(e) {}
+}
+var completed = safeLoad();
+var currentDay = null;
+function saveState() { safeSave(completed); }
+
+function updateGlobalProgress() {
+  var count = completed.size;
+  document.getElementById('completedCount').textContent = count;
+  document.getElementById('globalBar').style.width = ((count / 28) * 100) + '%';
+}
+
+function renderGrid(week) {
+  var days = DAYS.filter(function(d) { return d.week === week; });
+  var grid = document.getElementById('grid-week' + week);
+  grid.innerHTML = '';
+
+  days.forEach(function(d) {
+    var isDone = completed.has(d.day);
+    var isToday = !isDone && d.day === getNextIncomplete();
+    var card = document.createElement('div');
+    card.className = 'day-card' + (isDone ? ' completed' : '') + (isToday ? ' active-day' : '');
+    card.onclick = function() { openModal(d.day); };
+
+    var taskItems = d.tasks.map(function(t) {
+      var icon = t.type === 'teach' ? '📖' : t.type === 'do' ? '⚡' : '✓';
+      return '<li class="day-task"><div class="task-icon ' + t.type + '">' + icon + '</div><span>' + t.text + '</span></li>';
+    }).join('');
+
+    card.innerHTML = '<div class="day-card-header">'
+      + '<span class="day-num">DAY ' + d.day + '</span>'
+      + '<span class="day-tool">' + d.tool + '</span>'
+      + '<span class="day-status">' + (isDone ? '✓ DONE' : isToday ? '▶ TODAY' : 'LOCKED') + '</span>'
+      + '</div>'
+      + '<div class="day-card-body">'
+      + '<p class="day-goal">' + d.goal + '</p>'
+      + '<ul class="day-tasks">' + taskItems + '</ul>'
+      + '</div>'
+      + '<div class="day-card-footer">'
+      + '<span class="time-badge">⏱ ~15 min</span>'
+      + '<button class="complete-btn ' + (isDone ? 'done' : '') + '" data-daynum="' + d.day + '" onclick="event.stopPropagation(); window._td(this)">'
+      + (isDone ? '✓ Completed' : 'Mark Done')
+      + '</button></div>';
+    grid.appendChild(card);
+  });
+}
+
+function getNextIncomplete() {
+  for (var i = 1; i <= 28; i++) {
+    if (!completed.has(i)) return i;
+  }
+  return null;
+}
+
+function renderAllGrids() {
+  for (var w = 1; w <= 4; w++) renderGrid(w);
+  updateGlobalProgress();
+}
+
+function showWeek(n) {
+  document.querySelectorAll('.week-section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.week-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('week' + n).classList.add('active');
+  document.querySelectorAll('.week-tab')[n - 1].classList.add('active');
+}
+
+window._td = function(btn) { toggleDone(parseInt(btn.getAttribute('data-daynum'))); };
+function toggleDone(dayNum) {
+  if (completed.has(dayNum)) completed.delete(dayNum);
+  else completed.add(dayNum);
+  saveState();
+  renderAllGrids();
+}
+
+function openModal(dayNum) {
+  // Reset tutor state for new day
+  tutorInitialized = false;
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+  var d = DAYS.find(function(x) { return x.day === dayNum; });
+  currentDay = dayNum;
+
+  document.getElementById('modalTitle').textContent = 'DAY ' + d.day;
+  document.getElementById('modalSubtitle').textContent = d.tool + ' — ' + d.goal;
+
+  var body = document.getElementById('modalBody');
+  var isDone = completed.has(dayNum);
+  var teachText = (d.tasks.find(function(t){ return t.type === 'teach'; }) || {}).text || '';
+
+  // Build lesson points from LESSONS data
+  var lessonData = LESSONS[dayNum];
+  var lessonHTML = '';
+  if (lessonData) {
+    var points = lessonData.points.map(function(p) {
+      return '<div class="lesson-point"><span class="lesson-point-bullet">›</span><span>' + p + '</span></div>';
+    }).join('');
+    lessonHTML = '<div class="lesson-block"><h4>' + lessonData.title + '</h4>' + points + '</div>';
+  }
+
+  var doTasks = d.tasks.filter(function(t) { return t.type === 'do'; });
+  var testTasks = d.tasks.filter(function(t) { return t.type === 'test'; });
+
+  var doItems = doTasks.map(function(t) {
+    return '<li class="task-item-modal"><span class="task-tag tag-do">DO</span><span>' + t.text + '</span></li>';
+  }).join('');
+
+  var testItems = testTasks.map(function(t) {
+    return '<li class="task-item-modal"><span class="task-tag tag-test">TEST</span><span>' + t.text + '</span></li>';
+  }).join('');
+
+  var quizOptions = d.quiz.options.map(function(opt, i) {
+    return '<button class="quiz-option" data-idx="' + i + '" data-correct="' + d.quiz.correct + '" onclick="answerQuiz(this)">' + opt + '</button>';
+  }).join('');
+  // store feedback on the quiz block for retrieval
+  window._quizFeedback = d.quiz.feedback;
+
+  body.innerHTML = '<div class="section-label">&#128218; Today\'s Lesson</div>'
+    + lessonHTML
+    + '<div class="section-label">⚡ Hands-On Tasks</div>'
+    + '<ul class="task-list-modal">' + doItems + '</ul>'
+    + '<div class="section-label">🎯 Challenge</div>'
+    + '<ul class="task-list-modal">' + testItems + '</ul>'
+    + '<div class="section-label">✓ Knowledge Check</div>'
+    + '<div class="quiz-block">'
+    + '<div class="quiz-question">' + d.quiz.q + '</div>'
+    + '<div class="quiz-options">' + quizOptions + '</div>'
+    + '<div class="quiz-feedback" id="quizFeedback"></div>'
+    + '</div>';
+
+  var btn = document.getElementById('markDoneBtn');
+  btn.textContent = isDone ? '↩ Mark Incomplete' : '✓ Mark Complete';
+
+  document.getElementById('modalOverlay').classList.add('open');
+  // Auto-start tutor session
+  tutorInitialized = false;
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+  setTimeout(initTutorSession, 300);
+}
+
+function answerQuiz(btn) {
+  var selected = parseInt(btn.getAttribute('data-idx'));
+  var correct = parseInt(btn.getAttribute('data-correct'));
+  var feedback = window._quizFeedback || '';
+  var allBtns = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  allBtns.forEach(function(b) { b.disabled = true; });
+  allBtns[correct].classList.add('correct');
+  if (selected !== correct) btn.classList.add('wrong');
+  var fb = document.getElementById('quizFeedback');
+  fb.textContent = feedback;
+  fb.className = 'quiz-feedback show ' + (selected === correct ? 'correct' : 'wrong');
+}
+
+function markCurrentDone() {
+  if (currentDay) {
+    toggleDone(currentDay);
+    closeModalDirect();
+  }
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ── TAB SWITCHING ──────────────────────────────────────────────
+function switchTab(tab) { /* tabs removed - tutor always visible */ }
+
+// ── AI TUTOR CHAT ──────────────────────────────────────────────
+var chatHistory = [];
+var tutorInitialized = false;
+var isStreaming = false;
+
+function getTutorSystemPrompt(day) {
+  var d = DAYS.find(function(x) { return x.day === day; });
+  var taskLines = d.tasks.map(function(t) { return '[' + t.type.toUpperCase() + '] ' + t.text; }).join('\n');
+  return 'You are an elite AI training specialist and personal tutor with an IQ of 145. You are conducting a live tutoring session for Martin (49yo, based in Sofia, Bulgaria) on DAY ' + d.day + ' of a 28-day AI mastery program.\n\n'
+    + 'TODAY\'S TOOL: ' + d.tool + '\n'
+    + 'TODAY\'S GOAL: ' + d.goal + '\n\n'
+    + 'YOUR TEACHING MANDATE:\n'
+    + '- Teach ' + d.tool + ' in serious depth. Explain HOW it works, WHY it matters, WHERE it fits in the AI landscape, and WHAT separates experts from beginners.\n'
+    + '- Be a demanding, critical tutor. If Martin gives a shallow answer, push back. If he gets something wrong, correct it directly.\n'
+    + '- Adapt to his speed. If he is ahead, go deeper. If he is stuck, break it down differently.\n'
+    + '- Give concrete examples, real use cases, analogies where useful.\n'
+    + '- After teaching a concept, test understanding with a probing question before moving on.\n'
+    + '- Never pad responses. Be dense, useful, and sharp.\n'
+    + '- Speak directly. No over-friendliness. Intellectual respect goes both ways.\n'
+    + '- End each teaching block with a concrete action: "Now try this..." or "Before we continue, answer this..."\n\n'
+    + 'TASKS FOR TODAY:\n' + taskLines + '\n\n'
+    + 'Start with a sharp, substantive introduction to ' + d.tool + ' — what it actually is, why it exists, and the one insight most people miss. Then ask if Martin is ready to go deeper or has a specific angle to attack first.';
+}
+
+function initTutorSession() {
+  tutorInitialized = true;
+  chatHistory = [];
+  document.getElementById('chatMessages').innerHTML = '';
+  var d = DAYS.find(function(x) { return x.day === currentDay; });
+  addBubble('thinking', '⟳ Tutor is preparing your session...');
+  callClaude('Begin the session.', true);
+}
+
+function addBubble(role, text) {
+  var messages = document.getElementById('chatMessages');
+  var bubble = document.createElement('div');
+  bubble.className = 'chat-bubble ' + role;
+  bubble.textContent = text;
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+  return bubble;
+}
+
+function removeThinking() {
+  var t = document.querySelector('.chat-bubble.thinking');
+  if (t) t.remove();
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+async function sendMessage() {
+  if (isStreaming) return;
+  var input = document.getElementById('chatInput');
+  var text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  addBubble('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  addBubble('thinking', '⟳ Thinking...');
+  callClaude(text, false);
+}
+
+async function callClaude(userText, isInit) {
+  isStreaming = true;
+  document.querySelector('.chat-send-btn').disabled = true;
+
+  var systemPrompt = getTutorSystemPrompt(currentDay);
+
+  // Build message array — for init we use the system prompt trigger
+  var messages = isInit
+    ? [{ role: 'user', content: 'Begin the tutoring session now.' }]
+    : chatHistory;
+
+  try {
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+
+    var data = await response.json();
+    removeThinking();
+
+    if (data.content && data.content[0]) {
+      var reply = data.content[0].text;
+      addBubble('assistant', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } else {
+      addBubble('assistant', '[Error: No response received. Check your connection.]');
+    }
+  } catch (err) {
+    removeThinking();
+    addBubble('assistant', '[Connection error: ' + err.message + ']');
+  }
+
+  isStreaming = false;
+  document.querySelector('.chat-send-btn').disabled = false;
+  document.getElementById('chatMessages').scrollTop = 99999;
+}
+
+// Expose to global scope for inline onclick handlers
+window.showWeek = showWeek;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.closeModalDirect = closeModalDirect;
+window.toggleDone = toggleDone;
+window.markCurrentDone = markCurrentDone;
+window.switchTab = switchTab;
+window.sendMessage = sendMessage;
+window.handleChatKey = handleChatKey;
+window.answerQuiz = answerQuiz;
+
+// Init — wait for DOM
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderAllGrids);
+} else {
+  renderAllGrids();
+}
+</script>
+</body>
+</html>
