@@ -2213,13 +2213,15 @@ function makeApiCall(systemPrompt, messages, maxTokens) {
 // ── TASK EVALUATOR ─────────────────────────────────
 function buildEvalBlock(tid) {
   return '<div class="eval-block">'
-    + '<button class="eval-toggle" onclick="toggleEval(\"' + tid + '\")">&#9998; Submit for AI evaluation</button>'
+    + '<button class="eval-toggle" data-etid="' + tid + '">&#9998; Submit for AI evaluation</button>'
     + '<div class="eval-panel" id="panel_' + tid + '">'
     + '<textarea class="eval-textarea" id="txt_' + tid + '" placeholder="Describe what you did or paste your output..."></textarea>'
-    + '<button class="eval-submit" id="btn_' + tid + '" onclick="submitEval(\"' + tid + '\")">Get Evaluation</button>'
+    + '<button class="eval-submit" data-stid="' + tid + '">Get Evaluation</button>'
     + '<div class="eval-result" id="res_' + tid + '"></div>'
     + '</div></div>';
 }
+
+
 
 function toggleEval(tid) {
   var panel = document.getElementById('panel_' + tid);
@@ -2318,9 +2320,22 @@ function initApp() {
   } catch(e) {}
 }
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', function() { initApp(); // Delegated event handler for evaluator buttons — avoids all onclick quoting issues
+document.addEventListener('click', function(e) {
+  var etid = e.target.getAttribute('data-etid');
+  if (etid) { toggleEval(etid); return; }
+  var stid = e.target.getAttribute('data-stid');
+  if (stid) { submitEval(stid); return; }
+}); });
 } else {
   initApp();
+  // Delegated event handler for evaluator buttons — avoids all onclick quoting issues
+document.addEventListener('click', function(e) {
+  var etid = e.target.getAttribute('data-etid');
+  if (etid) { toggleEval(etid); return; }
+  var stid = e.target.getAttribute('data-stid');
+  if (stid) { submitEval(stid); return; }
+});
 }
 </script>
 </body>
