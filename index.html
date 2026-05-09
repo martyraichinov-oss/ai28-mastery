@@ -837,6 +837,37 @@
     white-space: nowrap;
   }
   .api-banner-btn:hover { background: #6d28d9; }
+
+  .api-help-strip {
+    width: 100%;
+    font-size: 12px;
+    color: var(--text-muted);
+    padding-top: 10px;
+    border-top: 1px solid rgba(124,58,237,0.2);
+    line-height: 1.8;
+  }
+  .api-banner.connected .api-help-strip { display: none; }
+  .api-help-strip a { color: var(--accent3); text-decoration: none; }
+  .api-help-strip a:hover { text-decoration: underline; }
+  .api-help-strip code {
+    background: var(--surface);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+  .api-guide-link {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 10px;
+    border: 1px solid var(--accent3);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--accent3) !important;
+  }
+  .api-guide-link:hover { background: var(--accent3); color: white !important; }
+
   .api-status { font-size: 12px; color: var(--text-muted); }
 
   /* TASK EVALUATOR */
@@ -935,10 +966,30 @@
 
 
   <div class="api-banner" id="apiBanner">
-    <span class="api-banner-label">&#128273; Anthropic API Key</span>
-    <input class="api-banner-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." />
-    <button class="api-banner-btn" onclick="saveApiKey()">Connect</button>
-    <span class="api-status" id="apiStatus">Required for Live Tutor &amp; Task Evaluation</span>
+    <div style="width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <span class="api-banner-label">&#128273; Anthropic API Key</span>
+      <input class="api-banner-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." />
+      <button class="api-banner-btn" onclick="saveApiKey()">Connect</button>
+      <span class="api-status" id="apiStatus">Required for Live Tutor &amp; Task Evaluation</span>
+    </div>
+    <div class="api-help-strip">
+      <strong>No key yet?</strong> &nbsp;
+      &#9312; Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> &nbsp;
+      &#9313; Sign up free ($5 credit included) &nbsp;
+      &#9314; Click <strong>API Keys &#8594; Create Key</strong> &nbsp;
+      &#9315; Copy the <code>sk-ant-...</code> key and paste above &nbsp;&nbsp;
+      <a href="https://console.anthropic.com/docs" target="_blank" class="api-guide-link">&#128196; Full guide</a>
+    </div>
+  </div>
+  <div id="keyHelpPanel" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin-bottom:20px;font-size:13px;line-height:1.9;color:var(--text);">
+    <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--accent);margin-bottom:14px;">HOW TO GET YOUR FREE API KEY</div>
+    <b>Step 1</b> &mdash; Go to <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent3);">console.anthropic.com</a> and sign up with your email.<br>
+    <b>Step 2</b> &mdash; Verify your email and add a phone number (required once).<br>
+    <b>Step 3</b> &mdash; Click <b>API Keys</b> in the left sidebar &rarr; <b>+ Create Key</b> &rarr; name it anything &rarr; click <b>Create Key</b>.<br>
+    <b>Step 4</b> &mdash; Copy the key immediately &mdash; it starts with <code style="background:var(--border);padding:2px 6px;border-radius:4px;">sk-ant-...</code> &mdash; you won't see it again.<br>
+    <b>Step 5</b> &mdash; Paste it into the field above and click Connect.<br><br>
+    <span style="color:var(--green);">&#10003; Anthropic gives you <b>$5 free credit</b> on signup.</span>
+    The entire 28-day program costs roughly <b>$1&ndash;3 total</b>. After free credit, add a card &mdash; typical monthly use is under $2.
   </div>
 
   <div class="legend">
@@ -1899,13 +1950,12 @@ function toggleDone(dayNum) {
 }
 
 function openModal(dayNum) {
-  // Reset tutor state for new day
+  currentDay = dayNum;
   tutorInitialized = false;
   chatHistory = [];
   window._evalTids = [];
   document.getElementById('chatMessages').innerHTML = '';
   var d = DAYS.find(function(x) { return x.day === dayNum; });
-  currentDay = dayNum;
 
   document.getElementById('modalTitle').textContent = 'DAY ' + d.day;
   document.getElementById('modalSubtitle').textContent = d.tool + ' — ' + d.goal;
@@ -2035,11 +2085,15 @@ function getTutorSystemPrompt(day) {
 }
 
 function initTutorSession() {
+  if (!currentDay) return;
+  if (!getApiKey()) {
+    addBubble('assistant', 'Paste your Anthropic API key in the banner at the top of the page and click Connect — then reopen this day to start the tutor.');
+    return;
+  }
   tutorInitialized = true;
   chatHistory = [];
   document.getElementById('chatMessages').innerHTML = '';
-  var d = DAYS.find(function(x) { return x.day === currentDay; });
-  addBubble('thinking', '⟳ Tutor is preparing your session...');
+  addBubble('thinking', 'Tutor is preparing your session...');
   callClaude('Begin the session.', true);
 }
 
@@ -2095,12 +2149,14 @@ async function callClaude(userText, isInit) {
     var data = await response.json();
     removeThinking();
 
-    if (data.content && data.content[0]) {
+    if (data.content && data.content[0] && data.content[0].text) {
       var reply = data.content[0].text;
       addBubble('assistant', reply);
       chatHistory.push({ role: 'assistant', content: reply });
+    } else if (data.error) {
+      addBubble('assistant', '[API Error: ' + data.error.type + ' — ' + data.error.message + ']');
     } else {
-      addBubble('assistant', '[Error: No response received. Check your connection.]');
+      addBubble('assistant', '[Unexpected response: ' + JSON.stringify(data).substring(0, 200) + ']');
     }
   } catch (err) {
     removeThinking();
@@ -2236,6 +2292,11 @@ async function submitEval(idx) {
   btn.textContent = 'Get Evaluation';
 }
 
+function toggleKeyHelp() {
+  var p = document.getElementById('keyHelpPanel');
+  if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
 // Expose to global scope for inline onclick handlers
 window.showWeek = showWeek;
 window.openModal = openModal;
@@ -2248,6 +2309,7 @@ window.sendMessage = sendMessage;
 window.handleChatKey = handleChatKey;
 window.answerQuiz = answerQuiz;
 window.saveApiKey = saveApiKey;
+window.toggleKeyHelp = toggleKeyHelp;
 window.toggleEval = toggleEval;
 window.submitEval = submitEval;
 
