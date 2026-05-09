@@ -994,6 +994,90 @@
     border-radius: 0 8px 8px 0;
     white-space: pre-wrap;
   }
+
+  .name-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .name-bar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .name-bar-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    padding: 8px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .name-bar-input:focus { border-color: var(--accent); }
+  .name-bar-hint { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+  .intro-content { padding: 4px 0 32px; }
+  .intro-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+  .intro-section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .intro-section-title .intro-icon { font-size: 20px; }
+  .intro-body { font-size: 14px; line-height: 1.9; color: var(--text); }
+  .intro-body p { margin-bottom: 12px; }
+  .intro-body ul, .intro-body ol { padding-left: 20px; margin-bottom: 12px; }
+  .intro-body li { margin-bottom: 8px; }
+  .intro-body strong { color: var(--accent); }
+  .intro-body .note {
+    background: rgba(124,58,237,0.08);
+    border-left: 3px solid var(--accent3);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .pricing-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .pricing-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .pricing-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; }
+  .pricing-table tr:last-child td { border-bottom: none; }
+  .free-tag { color: var(--green); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 11px; }
+  .paid-tag { color: var(--accent2); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 11px; }
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--surface); }
@@ -1020,6 +1104,13 @@
     </div>
   </header>
 
+
+  
+  <div class="name-bar" id="namebar">
+    <span class="name-bar-label">&#127891; Your Name</span>
+    <input class="name-bar-input" id="studentNameInput" type="text" placeholder="Enter your name for the certificate..." oninput="saveName()" />
+    <span class="name-bar-hint">Appears on your completion certificate</span>
+  </div>
 
   <div class="api-banner" id="apiBanner">
     <div style="width:100%;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -1057,14 +1148,21 @@
   </div>
 
   <div class="week-tabs">
-    <button class="week-tab active" onclick="showWeek(1)">WEEK 1 · Foundation</button>
+    <button class="week-tab active" onclick="showWeek(0)">&#9733; INTRO · AI Foundations</button>
+    <button class="week-tab" onclick="showWeek(1)">WEEK 1 · Foundation</button>
     <button class="week-tab" onclick="showWeek(2)">WEEK 2 · Creation</button>
     <button class="week-tab" onclick="showWeek(3)">WEEK 3 · Specialisation</button>
     <button class="week-tab" onclick="showWeek(4)">WEEK 4 · Integration</button>
   </div>
 
-  <!-- WEEK 1 -->
-  <div class="week-section active" id="week1">
+  <!-- INTRO -->
+  <div class="week-section active" id="week0">
+    <div class="week-title">INTRODUCTION <span class="week-theme">// AI FOUNDATIONS — Read Before You Begin</span></div>
+    <div class="intro-content" id="introContent"></div>
+  </div>
+
+    <!-- WEEK 1 -->
+  <div class="week-section" id="week1">
     <div class="week-title">WEEK 1 <span class="week-theme">// FOUNDATION — Core AI Conversational Tools</span></div>
     <div class="days-grid" id="grid-week1"></div>
   </div>
@@ -1122,6 +1220,147 @@
 </div>
 
 <script>
+
+var INTRO_HTML = [
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#129504;</span> What Is AI — And What It Is Not</div>',
+  '<div class="intro-body">',
+  '<p>Artificial Intelligence is software that finds patterns in large amounts of data and uses those patterns to make predictions, generate content, or take actions. It is not magic, not sentient, and not infallible.</p>',
+  '<ul>',
+  '<li><strong>What AI is:</strong> a statistical pattern-matcher trained on human-generated data. It predicts the most plausible next word, pixel, or decision based on what it has seen.</li>',
+  '<li><strong>What AI is not:</strong> conscious, self-aware, or capable of genuine understanding. It does not "know" anything — it approximates knowledge through pattern recognition.</li>',
+  '<li><strong>Key distinction:</strong> AI can produce outputs that look like intelligence without having any. A confident-sounding wrong answer is still wrong.</li>',
+  '<li><strong>Types you will encounter:</strong> Large Language Models (text), Diffusion Models (images/video), Speech Models (audio), and Agentic Systems (autonomous multi-step task execution).</li>',
+  '</ul>',
+  '<div class="note">The single most important mental model: AI is a very fast, very well-read intern who sometimes makes things up and never tells you when they are unsure.</div>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#9889;</span> How to Use AI Best</div>',
+  '<div class="intro-body">',
+  '<p>Most people use AI as a search engine or autocomplete. That is the lowest-value use. Here is the hierarchy from low to high value:</p>',
+  '<ol>',
+  '<li><strong>Information retrieval</strong> — asking factual questions. Useful but risky due to hallucination. Always verify.</li>',
+  '<li><strong>Content generation</strong> — drafting text, images, code. Saves time but requires your judgment to shape and correct.</li>',
+  '<li><strong>Analysis and reasoning</strong> — giving AI your documents, data, or problem and asking it to think through implications. High value.</li>',
+  '<li><strong>Workflow automation</strong> — connecting AI to your tools so repetitive tasks happen without you. Transformative.</li>',
+  '<li><strong>Agentic execution</strong> — AI that plans and completes multi-step projects autonomously. The frontier — powerful and requires oversight.</li>',
+  '</ol>',
+  '<p><strong>Universal rules for better results:</strong></p>',
+  '<ul>',
+  '<li>Be specific. Vague input produces vague output. The more context you give, the better the result.</li>',
+  '<li>Give it a role. "You are a senior tax advisor in Bulgaria" produces better tax answers than "what is the tax on X?"</li>',
+  '<li>Iterate. Your first prompt is a draft. Refine based on what you get.</li>',
+  '<li>Verify. Never trust AI output on factual claims without checking a primary source.</li>',
+  '<li>Own the judgment. AI produces options. You make decisions.</li>',
+  '</ul>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#9878;</span> Ethical Use in Daily Life</div>',
+  '<div class="intro-body">',
+  '<p><strong>For students:</strong></p>',
+  '<ul>',
+  '<li>Using AI to generate essays submitted as your own work is academic dishonesty — regardless of whether it is detectable. The harm is to your own learning.</li>',
+  '<li>Using AI to explain concepts, generate practice problems, check your reasoning, or give feedback on your drafts is legitimate and valuable.</li>',
+  '<li>The rule: AI as a tutor and thinking partner is ethical. AI as a ghostwriter who gets the grade is not.</li>',
+  '</ul>',
+  '<p><strong>For professionals and businesses:</strong></p>',
+  '<ul>',
+  '<li>Never input confidential client data, personal health records, legal documents, or trade secrets into a public AI service without checking your legal and contractual obligations.</li>',
+  '<li>Disclose AI use where your audience has a reasonable expectation of human authorship — journalism, therapy, legal advice, and personal relationships.</li>',
+  '<li>Do not use AI-generated content to deceive — fake reviews, synthetic personas, or impersonation cause real harm.</li>',
+  '<li>Verify before publishing. You are responsible for AI output you put your name on.</li>',
+  '</ul>',
+  '<div class="note">Ethical AI use is not about rules — it is about asking: am I using this in a way I would be comfortable explaining openly to the people it affects?</div>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#128200;</span> How AI Enhances Productivity and Speed</div>',
+  '<div class="intro-body">',
+  '<p>AI does not make you faster by doing your thinking. It makes you faster by eliminating the friction between your thinking and its execution. Specific gains:</p>',
+  '<ul>',
+  '<li><strong>First draft speed:</strong> the blank page problem disappears. AI produces a starting point in seconds that you shape and correct — faster than starting from nothing.</li>',
+  '<li><strong>Research compression:</strong> summarising 50 pages of documents in minutes rather than hours. Verifying the summary still takes judgment.</li>',
+  '<li><strong>Skill gap bridging:</strong> code without being a developer, design without being a designer, legal templates without being a lawyer. The quality ceiling is lower than professionals but dramatically above zero.</li>',
+  '<li><strong>Automation of repetition:</strong> anything you do more than 10 times with the same structure can likely be automated. Email classification, report generation, data formatting.</li>',
+  '<li><strong>Meeting intelligence:</strong> transcription, summarisation, and action item extraction from audio — eliminating manual note-taking entirely.</li>',
+  '</ul>',
+  '<p>The multiplier effect: professionals who use AI well are not 10% faster. They are completing in one hour what previously took a day. This is not an exaggeration for certain task categories.</p>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#9888;</span> What We Lose</div>',
+  '<div class="intro-body">',
+  '<p>No technology is purely additive. AI-assisted work involves real trade-offs:</p>',
+  '<ul>',
+  '<li><strong>Depth of learning:</strong> struggling through a problem builds understanding. Asking AI for the answer skips the struggle — and the learning. Students who never write without AI assistance may never develop their own voice or analytical muscle.</li>',
+  '<li><strong>Critical thinking atrophy:</strong> if AI always produces the first draft, you may lose the ability to generate ideas without it. The skill of starting from nothing weakens through disuse.</li>',
+  '<li><strong>Epistemic confidence:</strong> when AI is always available to verify, people may lose the ability to reason confidently without external validation.</li>',
+  '<li><strong>Jobs and economic displacement:</strong> roles centred on information processing, routine writing, basic coding, and data entry face genuine disruption. New roles emerge but the transition is uneven and painful for those displaced.</li>',
+  '<li><strong>Human connection:</strong> AI-generated communication can simulate warmth and empathy without the reality. Relationships mediated by AI outputs are thinner than they appear.</li>',
+  '<li><strong>Privacy and autonomy:</strong> AI systems require data. The more useful they are, the more they know about you. This is not neutral.</li>',
+  '</ul>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#127758;</span> Implications for Society</div>',
+  '<div class="intro-body">',
+  '<p><strong>Positive implications:</strong></p>',
+  '<ul>',
+  '<li>Democratisation of expertise — people in low-resource environments can access legal, medical, and educational guidance previously available only to the wealthy.</li>',
+  '<li>Scientific acceleration — AI is already identifying drug candidates, predicting protein structures, and analysing climate data at speeds impossible for human researchers alone.</li>',
+  '<li>Accessibility — real-time translation, voice synthesis for people with speech disabilities, and visual description for the blind represent genuine quality-of-life improvements.</li>',
+  '<li>Economic productivity at scale — if AI adds even modest productivity gains across knowledge work, the aggregate economic effect is enormous.</li>',
+  '</ul>',
+  '<p><strong>Negative and contested implications:</strong></p>',
+  '<ul>',
+  '<li><strong>Resource consumption:</strong> training a large AI model consumes as much electricity as hundreds of homes use in a year. Inference (using the model) at scale multiplies this. The environmental cost of AI is real and largely invisible to users.</li>',
+  '<li><strong>Water usage:</strong> data centres require significant water for cooling. A single conversation with an AI system uses a measurable amount of water. At billions of daily interactions, this is a macro resource issue.</li>',
+  '<li><strong>Concentration of power:</strong> the most capable AI systems are controlled by a handful of companies. This creates dependencies and power asymmetries with geopolitical consequences.</li>',
+  '<li><strong>Misinformation at scale:</strong> AI makes the production of convincing false content — text, images, audio, video — available to anyone. Detection is harder than generation.</li>',
+  '<li><strong>Inequality:</strong> AI amplifies the productivity of those who can use it well. If access and skill are unevenly distributed, AI accelerates existing inequality rather than reducing it.</li>',
+  '<li><strong>Autonomy and governance:</strong> decisions made by AI systems — in hiring, credit, criminal justice, content moderation — affect real people. Accountability for AI decisions is still largely unresolved.</li>',
+  '</ul>',
+  '<div class="note">Understanding both sides is not pessimism — it is the foundation of using AI as a responsible professional rather than an uncritical adopter.</div>',
+  '</div></div>',
+
+  '<div class="intro-section">',
+  '<div class="intro-section-title"><span class="intro-icon">&#128176;</span> Free vs Paid: What You Need to Know</div>',
+  '<div class="intro-body">',
+  '<p>Every tool in this programme has a free tier and a paid tier. Here is a clear breakdown of what you actually get for free and where you hit walls:</p>',
+  '<table class="pricing-table">',
+  '<tr><th>Tool</th><th>Free Tier</th><th>Paid / Limits</th></tr>',
+  '<tr><td><strong>ChatGPT</strong></td><td>GPT-4o mini, limited GPT-4o messages</td><td>Plus $20/mo — full GPT-4o, image gen, voice, plugins</td></tr>',
+  '<tr><td><strong>Claude</strong></td><td>Claude Sonnet (this app), limited messages/day</td><td>Pro $20/mo — higher limits, Projects, extended thinking</td></tr>',
+  '<tr><td><strong>Gemini</strong></td><td>Gemini 1.5 Flash in Google apps</td><td>Advanced $20/mo — Gemini Ultra, longer context, Workspace</td></tr>',
+  '<tr><td><strong>Perplexity</strong></td><td>5 Pro searches/day, standard model</td><td>Pro $20/mo — unlimited, GPT-4/Claude models, file upload</td></tr>',
+  '<tr><td><strong>DeepSeek</strong></td><td>Fully free web interface (privacy caveat)</td><td>API usage billed per token — very cheap</td></tr>',
+  '<tr><td><strong>Copilot</strong></td><td>Free in Edge/Windows with GPT-4 class</td><td>M365 Copilot ~$30/user/mo — embedded in Office apps</td></tr>',
+  '<tr><td><strong>Grok</strong></td><td>Limited access via X free tier</td><td>X Premium+ ~$16/mo — full Grok 3 access</td></tr>',
+  '<tr><td><strong>Lovable</strong></td><td>5 free projects, limited AI messages</td><td>Starter $20/mo — more projects, custom domains</td></tr>',
+  '<tr><td><strong>Manus</strong></td><td>Limited free credits</td><td>Paid tiers for more agent runs</td></tr>',
+  '<tr><td><strong>NanoBanana</strong></td><td>Free tier with daily limits</td><td>Pro subscription for higher resolution and volume</td></tr>',
+  '<tr><td><strong>Leonardo AI</strong></td><td>150 tokens/day (approx 15-30 images)</td><td>Apprentice $10/mo — 8,500 tokens/mo</td></tr>',
+  '<tr><td><strong>Meta AI</strong></td><td>Completely free in WhatsApp/Instagram</td><td>No paid tier currently</td></tr>',
+  '<tr><td><strong>AssemblyAI</strong></td><td>$50 free credit on signup</td><td>Pay-per-minute after — ~$0.37/hour of audio</td></tr>',
+  '<tr><td><strong>Canva AI</strong></td><td>Limited Magic Studio credits</td><td>Pro $15/mo — unlimited AI features</td></tr>',
+  '<tr><td><strong>Veo 3</strong></td><td>Limited via Google Labs waitlist</td><td>Gemini Ultra / Google One AI Premium</td></tr>',
+  '<tr><td><strong>Sora 2</strong></td><td>Not available on free tier</td><td>ChatGPT Plus $20/mo or Pro $200/mo for more</td></tr>',
+  '<tr><td><strong>Kimi</strong></td><td>Free web interface (privacy caveat)</td><td>API billed per token</td></tr>',
+  '<tr><td><strong>Kling</strong></td><td>Limited free generations/day</td><td>Standard ~$10/mo for more minutes</td></tr>',
+  '<tr><td><strong>Runway</strong></td><td>125 free credits one-time</td><td>Standard $15/mo — 625 credits/mo</td></tr>',
+  '<tr><td><strong>ElevenLabs</strong></td><td>10,000 characters/mo free</td><td>Starter $5/mo — 30,000 chars, voice cloning</td></tr>',
+  '<tr><td><strong>Midjourney</strong></td><td>No free tier (removed 2023)</td><td>Basic $10/mo — ~200 images/mo</td></tr>',
+  '<tr><td><strong>Cursor</strong></td><td>Free tier — 2,000 completions/mo</td><td>Pro $20/mo — unlimited, faster models</td></tr>',
+  '<tr><td><strong>Zapier</strong></td><td>5 Zaps, 100 tasks/mo</td><td>Starter $20/mo — 20 Zaps, 750 tasks</td></tr>',
+  '<tr><td><strong>NotebookLM</strong></td><td>Completely free (Google account needed)</td><td>NotebookLM Plus via Google One AI Premium</td></tr>',
+  '<tr><td><strong>Hugging Face / Ollama</strong></td><td>Completely free — run models locally</td><td>Hardware cost only (your own computer)</td></tr>',
+  '</table>',
+  '<div class="note"><strong>Recommended starting budget:</strong> You can complete this entire programme spending $0 by using free tiers strategically. If you want full access, $20/mo (ChatGPT Plus or Claude Pro) covers the most used tools. Video generation (Sora, Runway) requires separate paid access.</div>',
+  '</div></div>'
+].join("");
+
 var DAYS = [
   // WEEK 1
   {
@@ -1935,6 +2174,17 @@ function safeSave(s) {
 }
 var completed = safeLoad();
 var currentDay = null;
+
+function saveName() {
+  var val = document.getElementById('studentNameInput').value;
+  try { localStorage.setItem('ai28_name', val); } catch(e) {}
+}
+function loadName() {
+  try {
+    var n = localStorage.getItem('ai28_name');
+    if (n) document.getElementById('studentNameInput').value = n;
+  } catch(e) {}
+}
 function saveState() { safeSave(completed); }
 
 function updateGlobalProgress() {
@@ -1984,6 +2234,11 @@ function getNextIncomplete() {
   }
   return null;
 }
+function renderIntro() {
+  var el = document.getElementById('introContent');
+  if (!el) return;
+  el.innerHTML = INTRO_HTML;
+}
 
 function renderAllGrids() {
   for (var w = 1; w <= 4; w++) renderGrid(w);
@@ -1994,7 +2249,8 @@ function showWeek(n) {
   document.querySelectorAll('.week-section').forEach(function(s) { s.classList.remove('active'); });
   document.querySelectorAll('.week-tab').forEach(function(t) { t.classList.remove('active'); });
   document.getElementById('week' + n).classList.add('active');
-  document.querySelectorAll('.week-tab')[n - 1].classList.add('active');
+  document.querySelectorAll('.week-tab')[n].classList.add('active');
+  if (n === 0) renderIntro();
 }
 
 window._td = function(btn) { toggleDone(parseInt(btn.getAttribute('data-daynum'))); };
@@ -2075,11 +2331,21 @@ function openModal(dayNum) {
     + '<div class="quiz-options">' + quizOptions + '</div>'
     + '<div class="quiz-feedback" id="quizFeedback"></div>'
     + '</div>'
-    + '<div class="section-label" style="margin-top:20px;">&#128203; Submit Your Work for Evaluation</div>'
+    + '<div class="section-label" style="margin-top:20px;">&#128203; Assignment Evaluation</div>'
     + '<div class="static-eval-box">'
-    + '<div class="eval-instructions">Complete the tasks above, then paste your output or describe what you did here. Claude will score and critique your work.</div>'
-    + '<textarea id="evalInput" class="eval-textarea-static" placeholder="Paste your output, describe your approach, or write your answers here..."></textarea>'
-    + '<button id="evalBtn" onclick="runEvaluation()">Get AI Evaluation</button>'
+    + '<div class="eval-instructions">'
+    + '<strong>How to get evaluated:</strong><br>'
+    + '1. Complete the hands-on tasks above.<br>'
+    + '2. Open the <strong>Live AI Tutor</strong> below and paste this request:<br>'
+    + '<code style="display:block;background:var(--bg);padding:10px;border-radius:6px;margin:8px 0;font-size:12px;line-height:1.7;color:var(--accent);">'
+    + 'Is this a good prompt / output for [today\'s tool]? [paste your work here]. '
+    + 'Return: good sides, bad sides, and a score from 1-10.'
+    + '</code>'
+    + '3. If your score is <strong>below 5</strong> — revise and resubmit until you reach 5 or above.<br>'
+    + '4. Once you reach 5+, paste the tutor\'s evaluation below and click <strong>Record Score</strong>.'
+    + '</div>'
+    + '<textarea id="evalInput" class="eval-textarea-static" placeholder="Paste the AI tutor evaluation result here after getting your score..."></textarea>'
+    + '<button id="evalBtn" onclick="runEvaluation()">Record &amp; Verify Score</button>'
     + '<div id="evalOutput" class="eval-output"></div>'
     + '</div>';
 
@@ -2357,59 +2623,38 @@ function toggleKeyHelp() {
   if (p) p.style.display = p.style.display === 'none' ? 'block' : 'none';
 }
 
-async function runEvaluation() {
+function runEvaluation() {
   var input = document.getElementById('evalInput');
-  var btn = document.getElementById('evalBtn');
   var output = document.getElementById('evalOutput');
-  var submission = input ? input.value.trim() : '';
+  var btn = document.getElementById('evalBtn');
+  var text = input ? input.value.trim() : '';
 
-  if (!submission) {
-    output.textContent = 'Please paste your work or describe what you did before submitting.';
+  if (!text) {
+    output.style.background = 'rgba(239,68,68,0.08)';
+    output.style.borderLeftColor = 'var(--red)';
+    output.textContent = 'Paste the AI tutor evaluation before recording.';
     output.style.display = 'block';
     return;
   }
 
-  if (!getApiKey()) {
-    output.textContent = 'Paste your Anthropic API key in the banner at the top and click Connect first.';
-    output.style.display = 'block';
-    return;
+  // Extract score from pasted evaluation
+  var scoreMatch = text.match(/([0-9]|10)\s*\/\s*10|score[:\s]+([0-9]|10)|([0-9]|10)\s*out of\s*10/i);
+  var score = scoreMatch ? parseInt(scoreMatch[1] || scoreMatch[2] || scoreMatch[3]) : null;
+
+  if (score !== null && score < 5) {
+    output.style.background = 'rgba(239,68,68,0.08)';
+    output.style.borderLeftColor = 'var(--red)';
+    output.textContent = 'Score ' + score + '/10 — below the pass threshold of 5. Revise your work, go back to the tutor and resubmit. Do not mark this day complete until you reach 5 or above.';
+  } else if (score !== null) {
+    output.style.background = 'rgba(34,197,94,0.08)';
+    output.style.borderLeftColor = 'var(--green)';
+    output.textContent = 'Score ' + score + '/10 recorded. Well done — you can mark this day complete.';
+  } else {
+    output.style.background = 'rgba(232,255,71,0.06)';
+    output.style.borderLeftColor = 'var(--accent)';
+    output.textContent = 'Evaluation recorded. Could not detect a numeric score — make sure the tutor returned a X/10 score. If your score is 5 or above, mark the day complete.';
   }
-
-  btn.disabled = true;
-  btn.textContent = 'Evaluating...';
-  output.textContent = '';
-  output.style.display = 'none';
-
-  var d = DAYS.find(function(x) { return x.day === currentDay; });
-  var taskList = d.tasks.filter(function(t) { return t.type === 'do' || t.type === 'test'; })
-    .map(function(t, i) { return (i+1) + '. ' + t.text; }).join(' | ');
-
-  var sysPrompt = 'You are a demanding AI training specialist evaluating a student submission. '
-    + 'Student: Martin (or his child), working through a 28-day AI mastery programme. '
-    + 'Day ' + d.day + ' — Tool: ' + d.tool + '. '
-    + 'Tasks set: ' + taskList + '. '
-    + 'Evaluate the submission: Did they actually attempt the tasks? Is the output competent? '
-    + 'Score: Excellent / Competent / Needs Work / Redo. '
-    + 'Then 3-4 sentences of direct critique. Then one concrete next action. '
-    + 'Be direct. No padding.';
-
-  try {
-    var resp = await makeApiCall(sysPrompt, [{ role: 'user', content: submission }], 500);
-    var data = await resp.json();
-    if (data.content && data.content[0] && data.content[0].text) {
-      output.textContent = data.content[0].text;
-    } else if (data.error) {
-      output.textContent = 'API Error: ' + data.error.message;
-    } else {
-      output.textContent = 'Unexpected response: ' + JSON.stringify(data).substring(0, 150);
-    }
-  } catch(err) {
-    output.textContent = 'Connection error: ' + err.message;
-  }
-
   output.style.display = 'block';
-  btn.disabled = false;
-  btn.textContent = 'Get AI Evaluation';
 }
 
 // Expose to global scope for inline onclick handlers
@@ -2425,6 +2670,7 @@ window.handleChatKey = handleChatKey;
 window.answerQuiz = answerQuiz;
 window.saveApiKey = saveApiKey;
 window.runEvaluation = runEvaluation;
+window.saveName = saveName;
 window.toggleKeyHelp = toggleKeyHelp;
 window.toggleEval = toggleEval;
 window.submitEval = submitEval;
@@ -2432,6 +2678,8 @@ window.submitEval = submitEval;
 // Init — wait for DOM
 function initApp() {
   renderAllGrids();
+  loadName();
+  renderIntro();
   try {
     var stored = localStorage.getItem('ai28_apikey');
     if (stored) {
