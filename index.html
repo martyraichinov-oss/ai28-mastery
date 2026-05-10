@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 <title>AI MASTERY: 28 DAYS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Space+Grotesk:wght@300;400;600;700&display=swap');
@@ -648,6 +649,18 @@
   }
   .chat-send-btn:hover { background: #6d28d9; }
   .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .chat-clear-btn {
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .chat-clear-btn:hover { border-color: var(--red); color: var(--red); }
 
   /* TUTOR SECTION — always visible below modal body */
   .tutor-section {
@@ -751,6 +764,18 @@
   }
   .chat-send-btn:hover { background: #6d28d9; }
   .chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .chat-clear-btn {
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .chat-clear-btn:hover { border-color: var(--red); color: var(--red); }
 
   /* LESSON BLOCKS */
   .lesson-block {
@@ -1222,7 +1247,7 @@
         <div class="progress-bar-wrap">
           <div class="progress-bar-fill" id="globalBar" style="width:0%"></div>
         </div>
-        <div class="progress-nums"><span id="completedCount">0</span> / 28 days completed</div>
+        <div class="progress-nums"><span id="completedCount">0</span> / 28 days completed &nbsp; <span id="certLink" style="display:none"><a href="#" onclick="showCertificate(); return false;" style="color:var(--accent);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;text-decoration:none;">&#127941; View Certificate</a></span></div>
       </div>
     </div>
   </header>
@@ -1291,7 +1316,7 @@
     <button class="week-tab active" onclick="showWeek(0)">&#9733; INTRO · AI Foundations</button>
     <button class="week-tab" onclick="showWeek(1)">WEEK 1 · Foundation</button>
     <button class="week-tab" onclick="showWeek(2)">WEEK 2 · Creation</button>
-    <button class="week-tab" onclick="showWeek(3)">WEEK 3 · Specialisation</button>
+    <button class="week-tab" onclick="showWeek(3)">WEEK 3 · Media &amp; Specialisation</button>
     <button class="week-tab" onclick="showWeek(4)">WEEK 4 · Integration</button>
   </div>
 
@@ -1315,7 +1340,7 @@
 
   <!-- WEEK 3 -->
   <div class="week-section" id="week3">
-    <div class="week-title">WEEK 3 <span class="week-theme">// SPECIALISATION — Domain-Specific AI</span></div>
+    <div class="week-title">WEEK 3 <span class="week-theme">// MEDIA &amp; SPECIALISATION — Video, Audio, Image &amp; Domain AI</span></div>
     <div class="days-grid" id="grid-week3"></div>
   </div>
 
@@ -1348,6 +1373,7 @@
       <div class="chat-input-row">
         <textarea id="chatInput" class="chat-input" placeholder="Ask your tutor to explain more, give examples, or challenge you..." rows="2" onkeydown="handleChatKey(event)"></textarea>
         <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+        <button class="chat-clear-btn" onclick="clearTutorChat()" title="Clear conversation">&#8635;</button>
       </div>
     </div>
 
@@ -1479,13 +1505,13 @@ var INTRO_HTML = [
   '<tr><td><strong>Copilot</strong></td><td>Free in Edge/Windows with GPT-4 class</td><td>M365 Copilot ~$30/user/mo — embedded in Office apps</td></tr>',
   '<tr><td><strong>Grok</strong></td><td>Limited access via X free tier</td><td>X Premium+ ~$16/mo — full Grok 3 access</td></tr>',
   '<tr><td><strong>Lovable</strong></td><td>5 free projects, limited AI messages</td><td>Starter $20/mo — more projects, custom domains</td></tr>',
-  '<tr><td><strong>Manus</strong></td><td>Limited free credits</td><td>Paid tiers for more agent runs</td></tr>',
-  '<tr><td><strong>NanoBanana</strong></td><td>Free tier with daily limits</td><td>Pro subscription for higher resolution and volume</td></tr>',
+  '<tr><td><strong>Manus</strong></td><td>Limited free credits</td><td>Paid tiers — check current pricing at manus.im</td></tr>',
+  '<tr><td><strong>NanoBanana</strong></td><td>Free tier with daily limits</td><td>Pro subscription &#8212; check current pricing at the tool website</td></tr>',
   '<tr><td><strong>Leonardo AI</strong></td><td>150 tokens/day (approx 15-30 images)</td><td>Apprentice $10/mo — 8,500 tokens/mo</td></tr>',
   '<tr><td><strong>Meta AI</strong></td><td>Completely free in WhatsApp/Instagram</td><td>No paid tier currently</td></tr>',
   '<tr><td><strong>AssemblyAI</strong></td><td>Limited free tier — verify current offer at assemblyai.com</td><td>Pay-per-minute — ~$0.37/hour of audio</td></tr>',
   '<tr><td><strong>Canva AI</strong></td><td>Limited Magic Studio credits</td><td>Pro $15/mo — unlimited AI features</td></tr>',
-  '<tr><td><strong>Veo 3</strong></td><td>Limited via Google Labs waitlist</td><td>Gemini Ultra / Google One AI Premium</td></tr>',
+  '<tr><td><strong>Veo 3</strong></td><td>Limited via Google Labs waitlist</td><td>Gemini Ultra / Google One AI Premium — check current pricing at google.com/intl/en/about/products</td></tr>',
   '<tr><td><strong>Sora 2</strong></td><td>Not available on free tier</td><td>ChatGPT Plus $20/mo or Pro $200/mo for more</td></tr>',
   '<tr><td><strong>Kimi</strong></td><td>Free web interface (privacy caveat)</td><td>API billed per token</td></tr>',
   '<tr><td><strong>Kling</strong></td><td>Limited free generations/day</td><td>Standard ~$10/mo for more minutes</td></tr>',
@@ -1497,7 +1523,7 @@ var INTRO_HTML = [
   '<tr><td><strong>NotebookLM</strong></td><td>Completely free (Google account needed)</td><td>NotebookLM Plus via Google One AI Premium</td></tr>',
   '<tr><td><strong>Hugging Face / Ollama</strong></td><td>Completely free — run models locally</td><td>Hardware cost only (your own computer)</td></tr>',
   '</table>',
-  '<div class="note"><strong>Recommended starting budget:</strong> You can complete this entire programme spending $0 by using free tiers strategically. If you want full access to conversational AI, $20/mo (ChatGPT Plus or Claude Pro) covers the most used tools. Video generation (Sora, Runway) requires separate paid tiers. The Anthropic API (for the Live Tutor) requires a paid account at console.anthropic.com — add credit as needed, typical cost is under $1 for the full 28-day programme at current rates.</div>',
+  '<p style="font-size:11px;color:var(--text-muted);font-family:DM Mono,monospace;margin-bottom:8px;">Pricing last verified: May 2026. Prices change &#8212; always check the tool website before purchasing.</p><div class="note"><strong>Recommended starting budget:</strong> You can complete this entire programme spending $0 by using free tiers strategically. If you want full access to conversational AI, $20/mo (ChatGPT Plus or Claude Pro) covers the most used tools. Video generation (Sora, Runway) requires separate paid tiers. The Anthropic API (for the Live Tutor) requires a paid account at console.anthropic.com — add credit as needed, typical cost is under $1 for the full 28-day programme at current rates.</div>',
   '</div></div>'
 ].join("");
 
@@ -2331,6 +2357,8 @@ function updateGlobalProgress() {
   var count = completed.size;
   document.getElementById('completedCount').textContent = count;
   document.getElementById('globalBar').style.width = ((count / 28) * 100) + '%';
+  var certLink = document.getElementById('certLink');
+  if (certLink) certLink.style.display = count >= 28 ? 'inline' : 'none';
 }
 
 function renderGrid(week) {
@@ -2353,7 +2381,7 @@ function renderGrid(week) {
     card.innerHTML = '<div class="day-card-header">'
       + '<span class="day-num">DAY ' + d.day + '</span>'
       + '<span class="day-tool">' + d.tool + '</span>'
-      + '<span class="day-status">' + (isDone ? '✓ DONE' : isToday ? '▶ TODAY' : 'LOCKED') + '</span>'
+      + '<span class="day-status">' + (isDone ? '✓ DONE' : isToday ? '▶ TODAY' : 'Upcoming') + '</span>'
       + '</div>'
       + '<div class="day-card-body">'
       + '<p class="day-goal">' + d.goal + '</p>'
@@ -2388,8 +2416,10 @@ function renderAllGrids() {
 function showWeek(n) {
   document.querySelectorAll('.week-section').forEach(function(s) { s.classList.remove('active'); });
   document.querySelectorAll('.week-tab').forEach(function(t) { t.classList.remove('active'); });
-  document.getElementById('week' + n).classList.add('active');
-  document.querySelectorAll('.week-tab')[n].classList.add('active');
+  var section = document.getElementById('week' + n);
+  if (section) section.classList.add('active');
+  var tabs = document.querySelectorAll('.week-tab');
+  if (tabs[n]) tabs[n].classList.add('active');
   if (n === 0) renderIntro();
 }
 
@@ -2481,7 +2511,7 @@ function openModal(dayNum) {
     + '<div class="eval-instructions">'
     + '<strong>How to get evaluated:</strong><br>'
     + '1. Complete the hands-on tasks above.<br>'
-    + '2. Open the <strong>Live AI Tutor</strong> below and paste this request:<br>'
+    + '2. Scroll down to the <strong>Live AI Tutor</strong> chat panel at the bottom of this window and paste this request:<br>'
     + '<code style="display:block;background:var(--bg);padding:10px;border-radius:6px;margin:8px 0;font-size:12px;line-height:1.7;color:var(--accent);">'
     + 'Is this a good prompt / output for [today\'s tool]? [paste your work here]. '
     + 'Return: good sides, bad sides, and a score from 1-10.'
@@ -2826,6 +2856,14 @@ function closeCert() {
 function printCert() {
   window.print();
 }
+function clearTutorChat() {
+  chatHistory = [];
+  tutorInitialized = false;
+  var msgs = document.getElementById('chatMessages');
+  if (msgs) msgs.innerHTML = '';
+  setTimeout(initTutorSession, 200);
+}
+
 // Expose to global scope for inline onclick handlers
 window.showWeek = showWeek;
 window.openModal = openModal;
@@ -2843,6 +2881,7 @@ window.saveName = saveName;
 window.showCertificate = showCertificate;
 window.closeCert = closeCert;
 window.printCert = printCert;
+window.clearTutorChat = clearTutorChat;
 window.toggleKeyHelp = toggleKeyHelp;
 window.toggleEval = toggleEval;
 window.submitEval = submitEval;
@@ -2897,7 +2936,7 @@ document.addEventListener('click', function(e) {
         <div class="cert-name" id="certName">—</div>
         <div class="cert-body">has successfully completed the</div>
         <div class="cert-programme">28-Day AI Mastery Programme</div>
-        <div class="cert-tools">covering ChatGPT &middot; Claude &middot; Gemini &middot; Perplexity &middot; DeepSeek &middot; Copilot &middot; Grok &middot; Lovable &middot; Manus &middot; Leonardo AI &middot; Meta AI &middot; AssemblyAI &middot; Canva AI &middot; Veo 3 &middot; Sora 2 &middot; Kimi &middot; Kling &middot; Runway &middot; ElevenLabs &middot; Midjourney &middot; Cursor &middot; Zapier &middot; NotebookLM &middot; Hugging Face</div>
+        <div class="cert-tools">28 days covering ChatGPT &middot; Claude &middot; Gemini &middot; Perplexity &middot; DeepSeek &middot; Copilot &middot; Grok &middot; Lovable &middot; Manus &middot; Leonardo AI &middot; Meta AI &middot; AssemblyAI &middot; Canva AI &middot; Veo 3 &middot; Sora 2 &middot; Kimi &middot; Kling &middot; Runway &middot; ElevenLabs &middot; Midjourney &middot; Cursor &middot; Zapier &middot; NotebookLM &middot; Hugging Face &middot; AI Strategy &middot; AI Ethics &middot; Capstone</div>
         <div class="cert-date" id="certDate"></div>
         <div class="cert-seal">&#10022;</div>
         <div class="cert-footer">AI skills verified through daily study, hands-on tasks, and knowledge assessment</div>
